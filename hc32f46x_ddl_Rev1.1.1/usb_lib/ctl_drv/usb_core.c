@@ -662,6 +662,8 @@ USB_OTG_STS USB_OTG_SetCurrentMode(USB_OTG_CORE_HANDLE *pdev , uint8_t mode)
  ******************************************************************************/
 USB_OTG_STS USB_OTG_CoreInitDev (USB_OTG_CORE_HANDLE *pdev)
 {
+    uint32_t u32Reg = USB_OTG_READ_REG32(&pdev->regs.GREGS->GOTGCTL);
+
     USB_OTG_STS             status       = USB_OTG_OK;
     USB_OTG_DEPCTL_TypeDef  depctl;
     uint32_t i;
@@ -843,6 +845,18 @@ USB_OTG_STS USB_OTG_CoreInitDev (USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_WRITE_REG32(&pdev->regs.DREGS->DCTL, dctl.d32);
 
     USB_OTG_EnableDevInt(pdev);
+
+
+
+    u32Reg |= 0x00008000UL;
+    USB_OTG_WRITE_REG32(&pdev->regs.GREGS->GOTGCTL, u32Reg);
+
+    u32Reg |= 0x00000080UL;
+    USB_OTG_WRITE_REG32(&pdev->regs.GREGS->GOTGCTL, u32Reg);
+
+    u32Reg |= 0x00000040UL;
+    USB_OTG_WRITE_REG32(&pdev->regs.GREGS->GOTGCTL, u32Reg);
+
     return status;
 }
 

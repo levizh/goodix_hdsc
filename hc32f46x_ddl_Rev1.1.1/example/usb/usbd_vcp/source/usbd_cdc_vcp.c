@@ -224,13 +224,15 @@ uint16_t CDC_Transmit_FS (uint8_t* pBuf, uint32_t Len)
         u32Ret = USBD_OK;
     }
 #else
-    /* If CDC transfer state is idle */
-    if(CDC_TX_Handle.TxState == 0ul)
+    if(CDC_TX_Handle.TxState == CDC_TX_STAT_IDLE)
     {
         CDC_TX_Handle.pTxBuf = pBuf;
         CDC_TX_Handle.u32TxLen = Len;
-        CDC_TX_Handle.TxState = 1ul; /* TX state is busy */
-        CDC_TX_Handle.TxKicked = 0ul; /* CDC data transfer had not kicked */
+        CDC_TX_Handle.TxState = CDC_TX_STAT_PRE;
+    }
+    else if(CDC_TX_Handle.TxState == CDC_TX_STAT_END)
+    {
+        CDC_TX_Handle.TxState = CDC_TX_STAT_IDLE;
         u32Ret = USBD_OK;
     }
 #endif

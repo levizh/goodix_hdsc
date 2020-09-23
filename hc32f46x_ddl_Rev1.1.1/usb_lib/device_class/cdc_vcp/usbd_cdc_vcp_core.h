@@ -115,12 +115,16 @@ extern USBD_Class_cb_TypeDef  USBD_CDC_cb;
 
 #ifndef RINGBUF_ON
 
+#define CDC_TX_STAT_IDLE  0u
+#define CDC_TX_STAT_PRE   1u
+#define CDC_TX_STAT_ING   2u
+#define CDC_TX_STAT_END   3u
+
 typedef struct
 {
     uint8_t *pTxBuf;
     uint32_t u32TxLen;
     __IO uint32_t TxState;
-    __IO uint32_t TxKicked;
 }USBD_CDC_Tx_Handle_TypeDef;
 
 extern USBD_CDC_Tx_Handle_TypeDef CDC_TX_Handle;

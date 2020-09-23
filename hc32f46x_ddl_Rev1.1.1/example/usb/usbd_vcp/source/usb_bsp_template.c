@@ -207,12 +207,14 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 
     /* port config */
     /* Disable digital function for DM DP */
+
     MEM_ZERO_STRUCT(stcPortInit);
     stcPortInit.enPinMode = Pin_Mode_Ana;
     PORT_Init(PortA, Pin11, &stcPortInit);
     PORT_Init(PortA, Pin12, &stcPortInit);
     //PORT_SetFunc(PortA, Pin08, Func_UsbF, Disable); //SOF
-    PORT_SetFunc(PortA, Pin09, Func_UsbF, Disable); //VBUS
+//    PORT_SetFunc(PortA, Pin09, Func_UsbF, Disable); //VBUS
+
     PORT_SetFunc(PortA, Pin11, Func_UsbF, Disable); //DM
     PORT_SetFunc(PortA, Pin12, Func_UsbF, Disable); //DP
 

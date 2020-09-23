@@ -76,6 +76,7 @@
 
 #define CDC_DATA_OUT_PACKET_SIZE               (CDC_DATA_MAX_PACKET_SIZE)
 
+//#define RINGBUF_ON                             (1u)
 /*---------------------------------------------------------------------*/
 /*  CDC definitions                                                    */
 /*---------------------------------------------------------------------*/
@@ -112,6 +113,18 @@ typedef struct _CDC_IF_PROP
 CDC_IF_Prop_TypeDef;
 extern USBD_Class_cb_TypeDef  USBD_CDC_cb;
 
+#ifndef RINGBUF_ON
+
+typedef struct
+{
+    uint8_t *pTxBuf;
+    uint32_t u32TxLen;
+    __IO uint32_t TxState;
+    __IO uint32_t TxKicked;
+}USBD_CDC_Tx_Handle_TypeDef;
+
+extern USBD_CDC_Tx_Handle_TypeDef CDC_TX_Handle;
+#endif
 
 #endif  // __USB_CDC_CORE_H__
 

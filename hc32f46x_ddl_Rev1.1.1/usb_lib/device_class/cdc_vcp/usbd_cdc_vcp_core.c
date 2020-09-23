@@ -114,6 +114,8 @@
  ******************************************************************************/
 extern CDC_IF_Prop_TypeDef  APP_FOPS;
 
+USBD_CDC_Tx_Handle_TypeDef CDC_TX_Handle;
+
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
@@ -163,13 +165,14 @@ __USB_ALIGN_BEGIN static uint32_t  usbd_cdc_AltSet  __USB_ALIGN_END = 0ul;
 #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN uint8_t USB_Rx_Buffer   [CDC_DATA_MAX_PACKET_SIZE] __USB_ALIGN_END ;
 
+#ifdef RINGBUF_ON
 #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
   #if defined ( __ICCARM__ ) /*!< IAR Compiler */
     #pragma data_alignment=4
   #endif
 #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN uint8_t APP_Rx_Buffer   [APP_RX_DATA_SIZE] __USB_ALIGN_END ;
-
+#endif
 
 #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
   #if defined ( __ICCARM__ ) /*!< IAR Compiler */
@@ -178,11 +181,13 @@ __USB_ALIGN_BEGIN uint8_t APP_Rx_Buffer   [APP_RX_DATA_SIZE] __USB_ALIGN_END ;
 #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
 __USB_ALIGN_BEGIN uint8_t CmdBuff[CDC_CMD_PACKET_SZE] __USB_ALIGN_END ;
 
+#ifdef RINGBUF_ON
 uint32_t APP_Rx_ptr_in  = 0ul;
 uint32_t APP_Rx_ptr_out = 0ul;
 uint32_t APP_Rx_length  = 0ul;
-
 uint8_t  USB_Tx_State = 0u;
+#endif
+
 
 static uint32_t cdcCmd = 0xFFul;
 static uint32_t cdcLen = 0ul;
@@ -351,7 +356,13 @@ uint8_t  usbd_cdc_Init (void  *pdev, uint8_t cfgidx)
                      CDC_OUT_EP,
                      (uint8_t*)(USB_Rx_Buffer),
                      CDC_DATA_OUT_PACKET_SIZE);
-
+#ifndef RINGBUF_ON
+    /* Initialize TX handle */
+    CDC_TX_Handle.pTxBuf = NULL;
+    CDC_TX_Handle.u32TxLen = 0ul;
+    CDC_TX_Handle.TxState = 0ul; /* TX state is idle */
+    CDC_TX_Handle.TxKicked = 0ul; /* CDC data transfer had not kicked */
+#endif
     return USBD_OK;
 }
 
@@ -496,8 +507,9 @@ uint8_t  usbd_cdc_EP0_RxReady (void  *pdev)
   */
 uint8_t  usbd_cdc_DataIn (void *pdev, uint8_t epnum)
 {
-    uint16_t USB_Tx_ptr;
     uint16_t USB_Tx_length;
+#ifdef RINGBUF_ON
+    uint16_t USB_Tx_ptr;
 
     if (USB_Tx_State == 1u)
     {
@@ -530,11 +542,38 @@ uint8_t  usbd_cdc_DataIn (void *pdev, uint8_t epnum)
             }
             /* Prepare the available data buffer to be sent on IN endpoint */
             DCD_EP_Tx (pdev,
-                        CDC_IN_EP,
-                        (uint8_t*)&APP_Rx_Buffer[USB_Tx_ptr],
-                        (uint32_t)USB_Tx_length);
+                       CDC_IN_EP,
+                       (uint8_t*)&APP_Rx_Buffer[USB_Tx_ptr],
+                       (uint32_t)USB_Tx_length);
         }
     }
+#else
+      if(CDC_TX_Handle.u32TxLen == 0ul)
+      {
+          CDC_TX_Handle.pTxBuf = NULL;
+          CDC_TX_Handle.TxKicked = 0ul;
+          CDC_TX_Handle.TxState = 0ul;
+      }
+      else
+      {
+          if(CDC_TX_Handle.u32TxLen >= CDC_DATA_IN_PACKET_SIZE)
+          {
+              USB_Tx_length = CDC_DATA_IN_PACKET_SIZE;
+          }
+          else
+          {
+              USB_Tx_length = CDC_TX_Handle.u32TxLen;
+          }
+
+          DCD_EP_Tx (pdev,
+                    CDC_IN_EP,
+                    CDC_TX_Handle.pTxBuf,
+                    (uint32_t)USB_Tx_length);
+
+          CDC_TX_Handle.u32TxLen -= USB_Tx_length;
+          CDC_TX_Handle.pTxBuf += USB_Tx_length;
+      }
+#endif`
     return USBD_OK;
 }
 
@@ -584,6 +623,7 @@ uint8_t  usbd_cdc_SOF (void *pdev)
         /* Check the data to be sent through IN pipe */
         Handle_USBAsynchXfer(pdev);
     }
+
     return USBD_OK;
 }
 
@@ -595,8 +635,9 @@ uint8_t  usbd_cdc_SOF (void *pdev)
   */
 static void Handle_USBAsynchXfer (void *pdev)
 {
-    uint16_t USB_Tx_ptr;
     uint16_t USB_Tx_length;
+#ifdef RINGBUF_ON
+    uint16_t USB_Tx_ptr;
 
     if(USB_Tx_State != 1u)
     {
@@ -649,6 +690,33 @@ static void Handle_USBAsynchXfer (void *pdev)
                       (uint32_t)USB_Tx_length);
         }
     }
+#else
+    if(CDC_TX_Handle.TxState == 1ul)
+    {
+        /* If CDC data transfer had not kicked */
+        if(CDC_TX_Handle.TxKicked == 0ul)
+        {
+            if(CDC_TX_Handle.u32TxLen >= CDC_DATA_IN_PACKET_SIZE)
+            {
+                USB_Tx_length = CDC_DATA_IN_PACKET_SIZE;
+            }
+            else
+            {
+                USB_Tx_length = CDC_TX_Handle.u32TxLen;
+            }
+
+            DCD_EP_Tx (pdev,
+                      CDC_IN_EP,
+                      CDC_TX_Handle.pTxBuf,
+                      (uint32_t)USB_Tx_length);
+
+            CDC_TX_Handle.u32TxLen -= USB_Tx_length;
+            CDC_TX_Handle.pTxBuf += USB_Tx_length;
+            CDC_TX_Handle.TxKicked = 1ul;
+        }
+    }
+
+#endif
 }
 
 /**

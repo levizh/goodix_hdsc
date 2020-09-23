@@ -77,6 +77,7 @@ LINE_CODING linecoding =
  ******************************************************************************/
 /* These are external variables imported from CDC core to be used for IN
    transfer management. */
+#ifdef RINGBUF_ON
 extern uint8_t  APP_Rx_Buffer [APP_RX_DATA_SIZE]; /* Write CDC received data in this buffer.
                                      These data will be sent over USB IN endpoint
                                      in the CDC core functions. */
@@ -84,7 +85,7 @@ extern uint32_t APP_Rx_ptr_in;    /* Increment this pointer or roll it back to
                                      start address when writing received data
                                      in the buffer APP_Rx_Buffer. */
 extern uint32_t APP_Rx_length;
-
+#endif
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
@@ -204,7 +205,7 @@ static uint16_t VCP_Ctrl (uint32_t Cmd, uint8_t* Buf, uint32_t Len)
 uint16_t CDC_Transmit_FS (uint8_t* pBuf, uint32_t Len)
 {
     uint32_t u32Ret = USBD_BUSY;
-
+#ifdef RINGBUF_ON
     /* If data transmit buffer enough */
     if((APP_RX_DATA_SIZE - APP_Rx_length) > Len)
     {
@@ -222,6 +223,17 @@ uint16_t CDC_Transmit_FS (uint8_t* pBuf, uint32_t Len)
 
         u32Ret = USBD_OK;
     }
+#else
+    /* If CDC transfer state is idle */
+    if(CDC_TX_Handle.TxState == 0ul)
+    {
+        CDC_TX_Handle.pTxBuf = pBuf;
+        CDC_TX_Handle.u32TxLen = Len;
+        CDC_TX_Handle.TxState = 1ul; /* TX state is busy */
+        CDC_TX_Handle.TxKicked = 0ul; /* CDC data transfer had not kicked */
+        u32Ret = USBD_OK;
+    }
+#endif
     return u32Ret;
 }
 

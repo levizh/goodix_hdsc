@@ -141,9 +141,9 @@
 *******************************************************************************/
 
 /************** USB DEVICE ENDPOINT CONFIGURATION *****************************/
-#define CDC_IN_EP                         0x82u  /* EP1 for data IN */
-#define CDC_OUT_EP                        0x02u  /* EP1 for data OUT */
-#define CDC_CMD_EP                        0x81u  /* EP2 for CDC commands */
+#define CDC_IN_EP                         0x81u  /* EP1 for data IN */
+#define CDC_OUT_EP                        0x01u  /* EP1 for data OUT */
+#define CDC_CMD_EP                        0x82u  /* EP2 for CDC commands */
 
 /****************** USB OTG HS CONFIGURATION **********************************/
 #ifdef USB_OTG_HS_CORE

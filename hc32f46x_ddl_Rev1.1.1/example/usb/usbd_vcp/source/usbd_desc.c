@@ -64,25 +64,25 @@
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define USBD_VID                        0x2E88
+#define USBD_VID                        0x27C6
 
-#define USBD_PID                        0x4603
+#define USBD_PID                        0x5110
 
 
-#define USBD_LANGID_STRING              0x409
-#define USBD_MANUFACTURER_STRING        "HDSC"
+#define USBD_LANGID_STRING              1033
+#define USBD_MANUFACTURER_STRING        "Shenzhen Goodix Technology Co.,Ltd."
 
-#define USBD_PRODUCT_HS_STRING          "HDSC Virtual ComPort in HS mode"
-#define USBD_SERIALNUMBER_HS_STRING     "00000000050B"
+#define USBD_PRODUCT_HS_STRING          "Goodix Fingerprint Device "
+#define USBD_SERIALNUMBER_HS_STRING     "00000000001A"
 
-#define USBD_PRODUCT_FS_STRING          "HDSC Virtual ComPort in FS Mode"
-#define USBD_SERIALNUMBER_FS_STRING     "00000000050C"
+#define USBD_PRODUCT_FS_STRING          "Goodix Fingerprint Device "
+#define USBD_SERIALNUMBER_FS_STRING     "00000000001A"
 
-#define USBD_CONFIGURATION_HS_STRING    "VCP Config"
-#define USBD_INTERFACE_HS_STRING        "VCP Interface"
+#define USBD_CONFIGURATION_HS_STRING    "CDC Config"
+#define USBD_INTERFACE_HS_STRING        "CDC Interface"
 
-#define USBD_CONFIGURATION_FS_STRING    "VCP Config"
-#define USBD_INTERFACE_FS_STRING        "VCP Interface"
+#define USBD_CONFIGURATION_FS_STRING    "CDC Config"
+#define USBD_INTERFACE_FS_STRING        "CDC Interface"
 
 /*******************************************************************************
  * Local variable definitions ('static')
@@ -110,9 +110,9 @@ __USB_ALIGN_BEGIN uint8_t USBD_DeviceDesc[USB_SIZ_DEVICE_DESC] __USB_ALIGN_END =
     USB_DEVICE_DESCRIPTOR_TYPE, /*bDescriptorType*/
     0x00,                       /*bcdUSB */
     0x02,
-    0x00,                       /*bDeviceClass*/
-    0x00,                       /*bDeviceSubClass*/
-    0x00,                       /*bDeviceProtocol*/
+    0x02,                       /*bDeviceClass*/
+    0x01,                       /*bDeviceSubClass*/
+    0x01,                       /*bDeviceProtocol*/
     USB_OTG_MAX_EP0_SIZE,      /*bMaxPacketSize*/
     LOBYTE(USBD_VID),           /*idVendor*/
     HIBYTE(USBD_VID),           /*idVendor*/
@@ -122,7 +122,7 @@ __USB_ALIGN_BEGIN uint8_t USBD_DeviceDesc[USB_SIZ_DEVICE_DESC] __USB_ALIGN_END =
     0x02,
     USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
     USBD_IDX_PRODUCT_STR,       /*Index of product string*/
-    USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
+    0x00,//USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
     USBD_CFG_MAX_NUM            /*bNumConfigurations*/
 } ; /* USB_DeviceDescriptor */
 

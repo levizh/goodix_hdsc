@@ -63,8 +63,7 @@
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define USB_CDC_CONFIG_DESC_SIZ                (75u)
-#define USB_CDC_DESC_SIZ                       (75u-9u)
+#define USB_CDC_CONFIG_DESC_SIZ                (67u)
 
 #define CDC_DESCRIPTOR_TYPE                     (0x21u)
 

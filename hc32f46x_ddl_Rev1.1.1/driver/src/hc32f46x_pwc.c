@@ -1361,7 +1361,7 @@ static en_result_t PWC_enNvicBackup(void)
 {
     uint8_t u8Cnt;
     stc_intc_sel_field_t *stcIntSel;
-    uint32_t u32WakeupSrc = INT_MAX;
+    uint32_t u32WakeupSrc = IT_MAX;
     en_result_t enRet = Ok;
 
     /* Backup NVIC set enable register for IRQ0~143*/
@@ -1540,7 +1540,7 @@ static en_result_t PWC_enNvicBackup(void)
             }
         }
         /* Disable NVIC for all none-wakeup source */
-        else if (INT_MAX != stcIntSel->INTSEL)
+        else if (IT_MAX != stcIntSel->INTSEL)
         {
             NVIC_DisableIRQ((IRQn_Type)u8Cnt);
         }
@@ -1878,7 +1878,7 @@ en_result_t PWC_HS2LS(void)
     M4_SYSREG->PWR_PWRC2_f.DVS = 1u;
     M4_SYSREG->PWR_MDSWCR = 0x10u;
     DISABLE_PWR_REG_WRITE();
-    
+
     Ddl_Delay1ms(1ul);
 
     return Ok;
@@ -1918,7 +1918,7 @@ en_result_t PWC_LS2HS(void)
     {
         M4_EFM->FRMC_f.LVM = 0u;
     }
-    
+
     M4_SYSREG->PWR_RAMOPM = 0x8043u;
     while((0x8043 != M4_SYSREG->PWR_RAMOPM) || (0u != M4_EFM->FRMC_f.LVM))
     {

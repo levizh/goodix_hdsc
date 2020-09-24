@@ -463,6 +463,27 @@ void DCD_SetEPStatus (USB_OTG_CORE_HANDLE *pdev , uint8_t epnum , uint32_t Statu
     USB_OTG_SetEPStatus(pdev ,ep , Status);
 }
 
+/**
+ *******************************************************************************
+ **\brief  Get USB PHY suspend status
+ **\param  pdev: device instance
+ **\retval status
+ **        1ul: USB PHY is in suspend status
+ ******************************************************************************/
+uint32_t DCD_PHY_SuspendStatus(USB_OTG_CORE_HANDLE *pdev)
+{
+    USB_OTG_DSTS_TypeDef     dsts;
+    dsts.b = *(__IO stc_bUSB_OTG_DSTS_t*)&USB_OTG_READ_REG32(&pdev->regs.DREGS->DSTS);   /* C-STAT */
+    if(dsts.b.suspsts == 1u)
+    {
+        return 1ul;
+    }
+    else
+    {
+        return 0ul;
+    }
+}
+
 /*******************************************************************************
  * EOF (not truncated)
  ******************************************************************************/

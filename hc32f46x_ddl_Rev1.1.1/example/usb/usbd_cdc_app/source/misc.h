@@ -1,8 +1,8 @@
-/*******************************************************************************
- * Copyright (C) 2016, Huada Semiconductor Co., Ltd. All rights reserved.
+/*****************************************************************************
+ * Copyright (C) 2016, Huada Semiconductor Co.,Ltd All rights reserved.
  *
  * This software is owned and published by:
- * Huada Semiconductor Co., Ltd. ("HDSC").
+ * Huada Semiconductor Co.,Ltd ("HDSC").
  *
  * BY DOWNLOADING, INSTALLING OR USING THIS SOFTWARE, YOU AGREE TO BE BOUND
  * BY ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT.
@@ -40,92 +40,49 @@
  * at all times.
  */
 /******************************************************************************/
-/** \file hc32f46x_utility.h
+/** \file misc.h
  **
  ** A detailed description is available at
- ** @link DdlUtilityGroup Ddl Utility description @endlink
- **
- **   - 2018-11-02  1.0  Zhangxl First version for Device Driver Library Utility.
+ ** @link Header file for misc.c @endlink
  **
  ******************************************************************************/
-#ifndef __HC32F46x_UTILITY_H__
-#define __HC32F46x_UTILITY_H__
+#ifndef __MISC_H__
+#define __MISC_H__
 
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include "hc32_common.h"
-#include "ddl_config.h"
-
-#if (DDL_UTILITY_ENABLE == DDL_ON)
-
-/* C binding of definitions if building with C++ compiler */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-/**
- *******************************************************************************
- ** \defgroup DdlUtilityGroup Device Driver Library Utility(DDLUTILITY)
- **
- ******************************************************************************/
-//@{
 
 /*******************************************************************************
  * Global type definitions ('typedef')
  ******************************************************************************/
 
-/*******************************************************************************
- * Global pre-processor symbols/macros ('#define')
- ******************************************************************************/
-#define UART_DEBUG_PRINTF
-#define hd_printf printf//(void)
+
+/* SPI_NSS Port/Pin definition */
+#define SPI_NSS_PORT                    (PortB)
+#define SPI_NSS_PIN                     (Pin09)
+
+#define SPI_NSS_HIGH()                  (PORT_SetBits(SPI_NSS_PORT, SPI_NSS_PIN))
+#define SPI_NSS_LOW()                   (PORT_ResetBits(SPI_NSS_PORT, SPI_NSS_PIN))
 
 /*******************************************************************************
- * Global variable definitions ('extern')
+  Global function prototypes (definition in C source)
  ******************************************************************************/
+void HAL_NVIC_SetPriority(IRQn_Type IRQn, uint32_t PreemptPriority, uint32_t SubPriority);
+void HAL_NVIC_EnableIRQ(IRQn_Type IRQn);
+void HAL_NVIC_DisableIRQ(IRQn_Type IRQn);
+uint8_t SpiFlash_WriteReadByte(uint8_t u8Data);
+en_result_t SpiFlash_ReadData(uint32_t u32Addr, uint8_t pData[], uint16_t len);
+void MasterSpiDmaInit(void);
+en_result_t HAL_SPI_Receive_DMA(const M4_SPI_TypeDef *SPIx, uint8_t pu8Data[], uint16_t len);
+void MasterSpiInit(void);
+void USB_DPDMWakeupConfig(void);
+void USB_DPDM_PortInit(void);
+void EcIntConfig(void);
+void FPIntConfig(void);
+uint32_t GetECStatus(void);
 
-/*******************************************************************************
- * Global function prototypes (definition in C source)
- ******************************************************************************/
-/* Initialize uart for printf */
-en_result_t Ddl_UartInit(void);
-
-/* A approximate delay */
-void Ddl_Delay1ms(uint32_t u32Cnt);
-void Ddl_Delay1us(uint32_t u32Cnt);
-
-/* Systick functions */
-en_result_t SysTick_Init(uint32_t u32Freq);
-void SysTick_Delay(uint32_t u32Delay);
-void SysTick_IncTick(void);
-uint32_t SysTick_GetTick(void);
-void SysTick_Suspend(void);
-void SysTick_Resume(void);
-
-/*! Ddl assert, you can add your own assert functions by implement the function
-Ddl_AssertHook definition follow the function Ddl_AssertHook declaration */
-#ifdef __DEBUG
-#define DDL_ASSERT(x)                                                          \
-do{                                                                            \
-    ((x) ? (void)0 : Ddl_AssertHandler((uint8_t *)__FILE__, __LINE__));        \
-}while(0)
-/* Exported function */
-void Ddl_AssertHandler(uint8_t *file, int16_t line);
-#else
-#define DDL_ASSERT(x)                               (void)(0)
-#endif /* __DEBUG */
-
-//@} // DdlUtilityGroup
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* DDL_UTILITY_ENABLE */
-
-#endif /* __HC32F46x_UTILITY_H__ */
+#endif /*__MISC_H__*/
 
 /*******************************************************************************
  * EOF (not truncated)

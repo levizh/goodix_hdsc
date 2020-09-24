@@ -40,24 +40,20 @@
  * at all times.
  */
 /******************************************************************************/
-/** \file hc32f46x_utility.h
+/** \file usblib_config.h
  **
  ** A detailed description is available at
- ** @link DdlUtilityGroup Ddl Utility description @endlink
+ ** @link UsbLibConfigGroup USB LIB Config description @endlink
  **
- **   - 2018-11-02  1.0  Zhangxl First version for Device Driver Library Utility.
+ **   - 2018-12-25  1.0  Wangmin First version for Device Driver Library config.
  **
  ******************************************************************************/
-#ifndef __HC32F46x_UTILITY_H__
-#define __HC32F46x_UTILITY_H__
+#ifndef __USBLIB_CONFIG_H__
+#define __USBLIB_CONFIG_H__
 
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include "hc32_common.h"
-#include "ddl_config.h"
-
-#if (DDL_UTILITY_ENABLE == DDL_ON)
 
 /* C binding of definitions if building with C++ compiler */
 #ifdef __cplusplus
@@ -67,7 +63,7 @@ extern "C"
 
 /**
  *******************************************************************************
- ** \defgroup DdlUtilityGroup Device Driver Library Utility(DDLUTILITY)
+ ** \defgroup UsbLibConfigGroup Device Driver Library config(USBLIBCONFIG)
  **
  ******************************************************************************/
 //@{
@@ -79,8 +75,42 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define UART_DEBUG_PRINTF
-#define hd_printf printf//(void)
+
+
+/**
+ *******************************************************************************
+ ** \brief This is the list of modules to be used in the usb lib
+ ** Select the modules you need
+ **
+ ** \note
+ ******************************************************************************/
+
+/*! File folder on-off define */
+#define USBLIB_DEVICE_CORE                          (DDL_ON)
+#define USBLIB_HOST_CORE                            (DDL_OFF)
+#define USBLIB_DEVICE_CLASS                         (DDL_ON)
+#define USBLIB_HOST_CLASS                           (DDL_OFF)
+
+/*! ctl_drv file on-off define */
+#define CTL_DRV_USB_CORE                            (DDL_ON)
+#define CTL_DRV_USB_OTG                             (DDL_ON)
+#define CTL_DRV_USB_DCD                             (DDL_ON)
+#define CTL_DRV_USB_DCD_INT                         (DDL_ON)
+#define CTL_DRV_USB_HCD                             (DDL_OFF)
+#define CTL_DRV_USB_HCD_INT                         (DDL_OFF)
+
+/*! device class on-off define */
+#define DEVICE_CLASS_AUDIO                          (DDL_OFF)
+#define DEVICE_CLASS_HID_MOUSE                      (DDL_OFF)
+#define DEVICE_CLASS_MSC                            (DDL_OFF)
+#define DEVICE_CLASS_CDC_VCP                        (DDL_ON)
+#define DEVICE_CLASS_HID_CUSTOM                     (DDL_OFF)
+#define DEVICE_CLASS_HID_CDC_WRAPPER                (DDL_OFF)
+#define DEVICE_CLASS_HID_MSC_WRAPPER                (DDL_OFF)
+
+/*! host class on-off define */
+#define HOST_CLASS_HID                              (DDL_OFF)
+#define HOST_CLASS_MSC                              (DDL_OFF)
 
 /*******************************************************************************
  * Global variable definitions ('extern')
@@ -89,43 +119,14 @@ extern "C"
 /*******************************************************************************
  * Global function prototypes (definition in C source)
  ******************************************************************************/
-/* Initialize uart for printf */
-en_result_t Ddl_UartInit(void);
 
-/* A approximate delay */
-void Ddl_Delay1ms(uint32_t u32Cnt);
-void Ddl_Delay1us(uint32_t u32Cnt);
-
-/* Systick functions */
-en_result_t SysTick_Init(uint32_t u32Freq);
-void SysTick_Delay(uint32_t u32Delay);
-void SysTick_IncTick(void);
-uint32_t SysTick_GetTick(void);
-void SysTick_Suspend(void);
-void SysTick_Resume(void);
-
-/*! Ddl assert, you can add your own assert functions by implement the function
-Ddl_AssertHook definition follow the function Ddl_AssertHook declaration */
-#ifdef __DEBUG
-#define DDL_ASSERT(x)                                                          \
-do{                                                                            \
-    ((x) ? (void)0 : Ddl_AssertHandler((uint8_t *)__FILE__, __LINE__));        \
-}while(0)
-/* Exported function */
-void Ddl_AssertHandler(uint8_t *file, int16_t line);
-#else
-#define DDL_ASSERT(x)                               (void)(0)
-#endif /* __DEBUG */
-
-//@} // DdlUtilityGroup
+//@} // UsbLibConfigGroup
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* DDL_UTILITY_ENABLE */
-
-#endif /* __HC32F46x_UTILITY_H__ */
+#endif /* __USBLIB_CONFIG_H__*/
 
 /*******************************************************************************
  * EOF (not truncated)

@@ -54,7 +54,8 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include <stdio.h>
+//#include <stdio.h>
+#include "hc32f46x_utility.h"
 #include "usbd_core.h"
 #include "usbd_req.h"
 #include "usbd_ioreq.h"
@@ -225,17 +226,17 @@ static uint8_t USBD_DataOutStage(USB_OTG_CORE_HANDLE *pdev , uint8_t epnum)
                     /* in slave mode this, is handled by the RxSTSQLvl ISR */
                     ep->xfer_buff += ep->maxpacket;
                 }
-                ///printf("ContinueRx\n");
+                ///hd_printf("ContinueRx\n");
                 USBD_CtlContinueRx (pdev,
                 ep->xfer_buff,
                 (uint16_t)__MIN(ep->rem_data_len ,ep->maxpacket));
             }
             else
             {
-                //printf("out end\n");
+                //hd_printf("out end\n");
                 if (ep->xfer_count > ep->rem_data_len)
                 {
-                    printf("%ld %ld\n",ep->xfer_count, ep->rem_data_len);
+                    hd_printf("%ld %ld\n",ep->xfer_count, ep->rem_data_len);
                 }
                 ep->rem_data_len = 0u;
                 if((pdev->dev.class_cb->EP0_RxReady != NULL)&&

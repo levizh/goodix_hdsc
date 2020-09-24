@@ -1,8 +1,8 @@
-/*******************************************************************************
- * Copyright (C) 2016, Huada Semiconductor Co., Ltd. All rights reserved.
+/*****************************************************************************
+ * Copyright (C) 2016, Huada Semiconductor Co.,Ltd All rights reserved.
  *
  * This software is owned and published by:
- * Huada Semiconductor Co., Ltd. ("HDSC").
+ * Huada Semiconductor Co.,Ltd ("HDSC").
  *
  * BY DOWNLOADING, INSTALLING OR USING THIS SOFTWARE, YOU AGREE TO BE BOUND
  * BY ALL THE TERMS AND CONDITIONS OF THIS AGREEMENT.
@@ -40,37 +40,22 @@
  * at all times.
  */
 /******************************************************************************/
-/** \file hc32f46x_utility.h
+/** \file usb_bsp.h
  **
  ** A detailed description is available at
- ** @link DdlUtilityGroup Ddl Utility description @endlink
+ ** @link Specific api's relative to the used hardware platform @endlink
  **
- **   - 2018-11-02  1.0  Zhangxl First version for Device Driver Library Utility.
+ **   - 2018-12-26  1.0  wangmin First version for USB demo.
  **
  ******************************************************************************/
-#ifndef __HC32F46x_UTILITY_H__
-#define __HC32F46x_UTILITY_H__
+#ifndef __USB_BSP__H__
+#define __USB_BSP__H__
 
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include "hc32_common.h"
-#include "ddl_config.h"
-
-#if (DDL_UTILITY_ENABLE == DDL_ON)
-
-/* C binding of definitions if building with C++ compiler */
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-/**
- *******************************************************************************
- ** \defgroup DdlUtilityGroup Device Driver Library Utility(DDLUTILITY)
- **
- ******************************************************************************/
-//@{
+#include "usb_core.h"
+#include "usb_conf.h"
 
 /*******************************************************************************
  * Global type definitions ('typedef')
@@ -79,53 +64,26 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define UART_DEBUG_PRINTF
-#define hd_printf printf//(void)
 
 /*******************************************************************************
  * Global variable definitions ('extern')
  ******************************************************************************/
 
 /*******************************************************************************
- * Global function prototypes (definition in C source)
+  Global function prototypes (definition in C source)
  ******************************************************************************/
-/* Initialize uart for printf */
-en_result_t Ddl_UartInit(void);
+void BSP_Init(void);
 
-/* A approximate delay */
-void Ddl_Delay1ms(uint32_t u32Cnt);
-void Ddl_Delay1us(uint32_t u32Cnt);
-
-/* Systick functions */
-en_result_t SysTick_Init(uint32_t u32Freq);
-void SysTick_Delay(uint32_t u32Delay);
-void SysTick_IncTick(void);
-uint32_t SysTick_GetTick(void);
-void SysTick_Suspend(void);
-void SysTick_Resume(void);
-
-/*! Ddl assert, you can add your own assert functions by implement the function
-Ddl_AssertHook definition follow the function Ddl_AssertHook declaration */
-#ifdef __DEBUG
-#define DDL_ASSERT(x)                                                          \
-do{                                                                            \
-    ((x) ? (void)0 : Ddl_AssertHandler((uint8_t *)__FILE__, __LINE__));        \
-}while(0)
-/* Exported function */
-void Ddl_AssertHandler(uint8_t *file, int16_t line);
-#else
-#define DDL_ASSERT(x)                               (void)(0)
-#endif /* __DEBUG */
-
-//@} // DdlUtilityGroup
-
-#ifdef __cplusplus
-}
+void USB_OTG_BSP_Init (USB_OTG_CORE_HANDLE *pdev);
+void USB_OTG_BSP_uDelay (const uint32_t usec);
+void USB_OTG_BSP_mDelay (const uint32_t msec);
+void USB_OTG_BSP_EnableInterrupt (void);
+#ifdef USE_HOST_MODE
+void USB_OTG_BSP_ConfigVBUS(USB_OTG_CORE_HANDLE *pdev);
+void USB_OTG_BSP_DriveVBUS(USB_OTG_CORE_HANDLE *pdev,uint8_t state);
 #endif
 
-#endif /* DDL_UTILITY_ENABLE */
-
-#endif /* __HC32F46x_UTILITY_H__ */
+#endif //__USB_BSP__H__
 
 /*******************************************************************************
  * EOF (not truncated)

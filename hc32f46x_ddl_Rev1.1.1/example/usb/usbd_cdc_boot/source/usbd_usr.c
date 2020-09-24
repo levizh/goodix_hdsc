@@ -40,25 +40,40 @@
  * at all times.
  */
 /******************************************************************************/
-/** \file usbd_ioreq.c
+/** \file usbd_usr.c
  **
  ** A detailed description is available at
  ** @link
-    This file provides the IO requests APIs for control endpoints.
+        This file includes the user application layer.
     @endlink
  **
- **   - 2018-12-26  1.0  wangmin First version for USB demo.
+ **   - 2018-11-11  1.0  wangmin First version for USB demo.
  **
  ******************************************************************************/
 
 /*******************************************************************************
  * Include files
  ******************************************************************************/
+#include "hc32_ddl.h"
+#include "usbd_usr.h"
 #include "usbd_ioreq.h"
+#include "usb_conf.h"
+#include "usb_bsp.h"
 
 /*******************************************************************************
  * Local type definitions ('typedef')
  ******************************************************************************/
+/* User callback functions */
+USBD_Usr_cb_TypeDef USR_cb =
+{
+    &USBD_USR_Init,
+    &USBD_USR_DeviceReset,
+    &USBD_USR_DeviceConfigured,
+    &USBD_USR_DeviceSuspended,
+    &USBD_USR_DeviceResumed,
+    &USBD_USR_DeviceConnected,
+    &USBD_USR_DeviceDisconnected,
+};
 
 /*******************************************************************************
  * Local pre-processor symbols/macros ('#define')
@@ -81,148 +96,101 @@
  ******************************************************************************/
 /**
  *******************************************************************************
- ** \brief  USBD_CtlSendData
- **         send data on the ctl pipe
- ** \param  pdev: device instance
- ** \param  buff: pointer to data buffer
- ** \param  len: length of data to be sent
- ** \retval status
+ ** \brief  USBD_USR_Init
+ ** \param  None
+ ** \retval None
  ******************************************************************************/
-USBD_Status  USBD_CtlSendData (USB_OTG_CORE_HANDLE  *pdev,
-                               uint8_t *pbuf,
-                               uint16_t len)
+void USBD_USR_Init(void)
 {
-    USBD_Status ret = USBD_OK;
-
-    pdev->dev.in_ep[0].total_data_len = len;
-    pdev->dev.in_ep[0].rem_data_len   = len;
-    pdev->dev.device_state = USB_OTG_EP0_DATA_IN;
-
-    //hd_printf("ctrl in %d\n",len);
-
-    DCD_EP_Tx (pdev, 0u, pbuf, (uint32_t)len);
-
-    return ret;
+    /* Setup SysTick Timer for 20 msec interrupts This interrupt is used to probe the joystick */
+    if (SysTick_Config(SystemCoreClock / 50u))
+    {
+        /* Capture error */
+        while (1)
+        {
+            ;
+        }
+    }
 }
 
 /**
  *******************************************************************************
- ** \brief  USBD_CtlContinueSendData
- **         continue sending data on the ctl pipe
- ** \param  pdev: device instance
- ** \param  buff: pointer to data buffer
- ** \param  len: length of data to be sent
- ** \retval status
+ ** \brief  USBD_USR_DeviceReset
+ ** \param  speed : device speed
+ ** \retval None
  ******************************************************************************/
-USBD_Status  USBD_CtlContinueSendData (USB_OTG_CORE_HANDLE  *pdev,
-                                       uint8_t *pbuf,
-                                       uint16_t len)
+void USBD_USR_DeviceReset(uint8_t speed )
 {
-    USBD_Status ret = USBD_OK;
+    switch (speed)
+    {
+        case USB_OTG_SPEED_HIGH:
+             hd_printf("     USB Device Library v1.1.0 [HS]\n" );
+             break;
 
-    DCD_EP_Tx (pdev, 0u, pbuf, (uint32_t)len);
-    return ret;
+        case USB_OTG_SPEED_FULL:
+             hd_printf("     USB Device Library v1.1.0 [FS]\n" );
+             break;
+        default:
+             hd_printf("     USB Device Library v1.1.0 [??]\n" );
+             break;
+    }
 }
 
 /**
  *******************************************************************************
- ** \brief  USBD_CtlPrepareRx
- **         receive data on the ctl pipe
- ** \param  pdev: USB OTG device instance
- ** \param  buff: pointer to data buffer
- ** \param  len: length of data to be received
- ** \retval status
+ ** \brief  USBD_USR_DeviceConfigured
+ ** \param  None
+ ** \retval None
  ******************************************************************************/
-USBD_Status  USBD_CtlPrepareRx (USB_OTG_CORE_HANDLE  *pdev,
-                                  uint8_t *pbuf,
-                                  uint16_t len)
+void USBD_USR_DeviceConfigured (void)
 {
-    USBD_Status ret = USBD_OK;
-
-    pdev->dev.out_ep[0].total_data_len = len;
-    pdev->dev.out_ep[0].rem_data_len   = len;
-    pdev->dev.device_state = USB_OTG_EP0_DATA_OUT;
-
-    DCD_EP_PrepareRx (pdev,
-                        0u,
-                        pbuf,
-                        len);
-    return ret;
+    hd_printf("> CDC VCP Interface started.\n");
 }
 
 /**
  *******************************************************************************
- ** \brief  USBD_CtlContinueRx
- **         continue receive data on the ctl pipe
- ** \param  pdev: USB OTG device instance
- ** \param  buff: pointer to data buffer
- ** \param  len: length of data to be received
- ** \retval status
+ ** \brief  USBD_USR_DeviceConnected
+ ** \param  None
+ ** \retval None
  ******************************************************************************/
-USBD_Status  USBD_CtlContinueRx (USB_OTG_CORE_HANDLE  *pdev,
-                                          uint8_t *pbuf,
-                                          uint16_t len)
+void USBD_USR_DeviceConnected (void)
 {
-    USBD_Status ret = USBD_OK;
-
-    DCD_EP_PrepareRx (pdev,
-                        0u,
-                        pbuf,
-                        len);
-    return ret;
-}
-/**
- *******************************************************************************
- ** \brief  USBD_CtlSendStatus
- **         send zero lzngth packet on the ctl pipe
- ** \param  pdev: USB OTG device instance
- ** \retval status
- ******************************************************************************/
-USBD_Status  USBD_CtlSendStatus (USB_OTG_CORE_HANDLE  *pdev)
-{
-    USBD_Status ret = USBD_OK;
-    pdev->dev.device_state = USB_OTG_EP0_STATUS_IN;
-    DCD_EP_Tx (pdev,
-                0u,
-                pdev->dev.setup_packet,//NULL,
-                0u);
-    //hd_printf("ctrl send status\n");
-    //  USB_OTG_EP0_OutStart(pdev);
-
-    return ret;
+    hd_printf("> USB Device Connected.\n");
 }
 
 /**
  *******************************************************************************
- ** \brief  USBD_CtlReceiveStatus
- **         receive zero lzngth packet on the ctl pipe
- ** \param  pdev: USB OTG device instance
- ** \retval status
+ ** \brief  USBD_USR_DeviceDisonnected
+ ** \param  None
+ ** \retval None
  ******************************************************************************/
-USBD_Status  USBD_CtlReceiveStatus (USB_OTG_CORE_HANDLE  *pdev)
+void USBD_USR_DeviceDisconnected (void)
 {
-    USBD_Status ret = USBD_OK;
-    pdev->dev.device_state = USB_OTG_EP0_STATUS_OUT;
-    DCD_EP_PrepareRx ( pdev,
-                        0u,
-                        pdev->dev.setup_packet,//NULL,
-                        0u);
-    //  USB_OTG_EP0_OutStart(pdev);
-    return ret;
+    hd_printf("> USB Device Disconnected.\n");
 }
-
 
 /**
  *******************************************************************************
- ** \brief  USBD_GetRxCount
- **         returns the received data length
- ** \param  pdev: USB OTG device instance
- **         epnum: endpoint index
- ** \retval Rx Data blength
+ ** \brief  USBD_USR_DeviceSuspended
+ ** \param  None
+ ** \retval None
  ******************************************************************************/
-uint16_t  USBD_GetRxCount (USB_OTG_CORE_HANDLE  *pdev , uint8_t epnum)
+void USBD_USR_DeviceSuspended(void)
 {
-    return (uint16_t)pdev->dev.out_ep[epnum].xfer_count;
+    hd_printf("> USB Device in Suspend Mode.\n");
+    /* Users can do their application actions here for the USB-Reset */
+}
+
+/**
+ *******************************************************************************
+ ** \brief  USBD_USR_DeviceResumed
+ ** \param  None
+ ** \retval None
+ ******************************************************************************/
+void USBD_USR_DeviceResumed(void)
+{
+    hd_printf("> USB Device in Idle Mode.\n");
+    /* Users can do their application actions here for the USB-Reset */
 }
 
 /*******************************************************************************

@@ -1830,7 +1830,7 @@ uint32_t USB_OTG_testmode(USB_OTG_CORE_HANDLE *pdev,int mode)
     hprt0.d32 = USB_OTG_ReadHPRT0(pdev);
     hprt0.b.prttstctl = (uint32_t)mode;
     USB_OTG_WRITE_REG32(pdev->regs.HPRT0, hprt0.d32);
-    printf("test mode stated\n");
+    hd_printf("test mode stated\n");
     return 1ul;
 }
 

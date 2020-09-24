@@ -88,6 +88,8 @@ static __IO uint32_t m_u32TickCount = 0UL;
  * Function implementation - global ('extern') and local ('static')
  ******************************************************************************/
 #ifdef UART_DEBUG_PRINTF
+#define UART_PRT    (M4_USART1)
+//#define UART_PRT    M4_USART3
 /**
  *******************************************************************************
  ** \brief Data printf via Uart Ch.3
@@ -97,8 +99,8 @@ static __IO uint32_t m_u32TickCount = 0UL;
  ******************************************************************************/
 void DebugOutput(uint8_t u8Data)
 {
-    M4_USART3->DR = u8Data;
-    while (0ul == M4_USART3->SR_f.TC)
+    UART_PRT->DR = u8Data;
+    while (0ul == UART_PRT->SR_f.TC)
     {
         ;
     }
@@ -152,7 +154,7 @@ static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
     uint32_t u32UartClk = 0u;
 
     u32PClk1 = SystemCoreClock / (1ul << (M4_SYSREG->CMU_SCFGR_f.PCLK1S));
-    u32UartClk = u32PClk1 / (1ul << (2ul * (M4_USART3->PR_f.PSC)));
+    u32UartClk = u32PClk1 / (1ul << (2ul * (UART_PRT->PR_f.PSC)));
 
     B = u32Baudrate;
     C = u32UartClk;
@@ -163,7 +165,7 @@ static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
     }
     else
     {
-        OVER8 = M4_USART3->CR1_f.OVER8;
+        OVER8 = UART_PRT->CR1_f.OVER8;
 
         /* FBME = 0 Calculation formula */
         /* B = C / (8 * (2 - OVER8) * (DIV_Integer + 1)) */
@@ -191,9 +193,9 @@ static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
             {
             }
 
-            M4_USART3->CR1_f.FBME = (0xFFFFFFFFul == DIV_Fraction) ? 0ul : 1ul;
-            M4_USART3->BRR_f.DIV_FRACTION = DIV_Fraction;
-            M4_USART3->BRR_f.DIV_INTEGER = DIV_Integer;
+            UART_PRT->CR1_f.FBME = (0xFFFFFFFFul == DIV_Fraction) ? 0ul : 1ul;
+            UART_PRT->BRR_f.DIV_FRACTION = DIV_Fraction;
+            UART_PRT->BRR_f.DIV_INTEGER = DIV_Integer;
             enRet = Ok;
         }
     }
@@ -213,19 +215,25 @@ en_result_t Ddl_UartInit(void)
 
     /* unlock */
     M4_PORT->PWPR = 0xA501u;
-    /* usart3_tx gpio  PE5 */
-    M4_PORT->PFSRE5_f.FSEL  = 32u;
+
+    /* usart1_tx gpio  PA9 */
+    M4_PORT->PFSRA9_f.FSEL  = 32u;
+    /* enable usart1 */
+    M4_MSTP->FCG1_f.USART1 = 0ul;
+
+//    /* usart3_tx gpio  PE5 */
+//    M4_PORT->PFSRE5_f.FSEL  = 32u;
+//    /* enable usart3 */
+//    M4_MSTP->FCG1_f.USART3 = 0ul;
+
     /* lock */
     M4_PORT->PWPR = 0xA500u;
-    /* enable usart3 */
-    M4_MSTP->FCG1_f.USART3 = 0ul;
-    /* usart3 init */
-
-    M4_USART3->CR1_f.ML = 0ul;    // LSB
-    M4_USART3->CR1_f.MS = 0ul;    // UART mode
-    M4_USART3->CR1_f.OVER8 = 1ul; // 8bit sampling mode
-    M4_USART3->CR1_f.M = 0ul;     // 8 bit data length
-    M4_USART3->CR1_f.PCE = 0ul;   // no parity bit
+    /* usart init */
+    UART_PRT->CR1_f.ML = 0ul;    // LSB
+    UART_PRT->CR1_f.MS = 0ul;    // UART mode
+    UART_PRT->CR1_f.OVER8 = 1ul; // 8bit sampling mode
+    UART_PRT->CR1_f.M = 0ul;     // 8 bit data length
+    UART_PRT->CR1_f.PCE = 0ul;   // no parity bit
 
     /* baudrate set */
     if( Ok != SetUartBaudrate(115200ul))
@@ -235,12 +243,12 @@ en_result_t Ddl_UartInit(void)
     else
     {
         /* 1 stop bit, single uart mode */
-        M4_USART3->CR2 = 0ul;
+        UART_PRT->CR2 = 0ul;
 
         /* CTS disable, Smart Card mode disable */
-        M4_USART3->CR3 = 0ul;
+        UART_PRT->CR3 = 0ul;
 
-        M4_USART3->CR1_f.TE = 1ul;    // TX enable
+        UART_PRT->CR1_f.TE = 1ul;    // TX enable
     }
 
     return enRet;
@@ -430,7 +438,7 @@ __WEAKDEF void SysTick_Resume(void)
 #ifdef __DEBUG
 __WEAKDEF void Ddl_AssertHandler(uint8_t *file, int16_t line)
 {
-    printf("Wrong parameters value: file %s on line %d\r\n", file, line);
+    hd_printf("Wrong parameters value: file %s on line %d\r\n", file, line);
     while (1)
     {
         ;

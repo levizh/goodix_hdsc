@@ -54,7 +54,8 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include <stdio.h>
+//#include <stdio.h>
+#include "hc32f46x_utility.h"
 #include "usb_dcd_int.h"
 #include "usb_bsp.h"
 
@@ -294,7 +295,7 @@ uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev)
         /* VBUS valid interrupt */
         else if (gintr_status.b.vbusvint)
         {
-            printf("vbus\n");
+            hd_printf("vbus\n");
             retval |= DCD_SessionRequest_ISR(pdev);
         }
 
@@ -326,7 +327,7 @@ static uint32_t DCD_SessionRequest_ISR(USB_OTG_CORE_HANDLE *pdev)
 
     USBD_DCD_INT_fops->DevConnected (pdev);
 
-    printf("SessionRequest !!\n");
+    hd_printf("SessionRequest !!\n");
     /* Clear interrupt */
     gintsts.d32 = 0ul;
     gintsts.b.vbusvint = 1u;
@@ -356,7 +357,7 @@ static uint32_t DCD_SessionRequest_ISR(USB_OTG_CORE_HANDLE *pdev)
 //{
 //
 //  USB_OTG_GOTGINT_TypeDef  gotgint;
-//  printf("\tDCD_OTG_ISR !!\n");
+//  hd_printf("\tDCD_OTG_ISR !!\n");
 //  gotgint.d32 = USB_OTG_READ_REG32(&pdev->regs.GREGS->GOTGINT);
 //
 //  if (gotgint.b.sesenddet)
@@ -382,7 +383,7 @@ static uint32_t DCD_HandleResume_ISR(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_DCTL_TypeDef     devctl;
     USB_OTG_PCGCCTL_TypeDef  power;
 
-    printf("resume !!\n");
+    hd_printf("resume !!\n");
     if(pdev->cfg.low_power)
     {
         /* un-gate USB Core clock */
@@ -421,7 +422,7 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_DSTS_TypeDef     dsts;
     __IO uint8_t prev_status = 0u;
 
-    printf("suspend !!\n");
+    hd_printf("suspend !!\n");
     prev_status = pdev->dev.device_status;
     USBD_DCD_INT_fops->Suspend (pdev);
 
@@ -490,12 +491,12 @@ static uint32_t DCD_HandleInEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                     if((epnum == 0u) && (pdev->dev.device_state == USB_OTG_EP0_STATUS_IN))
                     {
                         /* prepare to rx more setup packets */
-                        ///printf("status in\n");
+                        ///hd_printf("status in\n");
                         USB_OTG_EP0_OutStart(pdev);
                         pdev->dev.device_state = USB_OTG_EP0_IDLE;
                     }
                 }
-                ///printf("ctrl-in %x\n",USB_OTG_READ_REG32(&(pdev->regs.INEP_REGS[epnum]->DIEPTSIZ)));
+                ///hd_printf("ctrl-in %x\n",USB_OTG_READ_REG32(&(pdev->regs.INEP_REGS[epnum]->DIEPTSIZ)));
             }
             if ( diepint.b.timeout )
             {
@@ -515,7 +516,7 @@ static uint32_t DCD_HandleInEP_ISR(USB_OTG_CORE_HANDLE *pdev)
             }
             if (diepint.b.emptyintr)
             {
-                //printf("empty ep%d\n",epnum);
+                //hd_printf("empty ep%d\n",epnum);
                 DCD_WriteEmptyTxFifo(pdev , epnum);
                 CLEAR_IN_EP_INTR(epnum, in_emptyintr);
             }
@@ -564,7 +565,7 @@ static uint32_t DCD_HandleOutEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                     /*ToDo : handle more than one single MPS size packet */
                     pdev->dev.out_ep[epnum].xfer_count = pdev->dev.out_ep[epnum].maxpacket - \
                     deptsiz.b.xfersize;
-                    printf("ep%d xfer_count %d t %d  s %d\n",epnum, pdev->dev.out_ep[epnum].xfer_count,
+                    hd_printf("ep%d xfer_count %d t %d  s %d\n",epnum, pdev->dev.out_ep[epnum].xfer_count,
                     deptsiz.b.xfersize, pdev->dev.device_state);
                 }
                 /* Inform upper layer: data ready */
@@ -576,7 +577,7 @@ static uint32_t DCD_HandleOutEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                     if((epnum == 0u) && (pdev->dev.device_state == USB_OTG_EP0_STATUS_OUT))
                     {
                         /* prepare to rx more setup packets */
-                         // printf("prepare to rx more setup..\n");
+                         // hd_printf("prepare to rx more setup..\n");
                         USB_OTG_EP0_OutStart(pdev);
                     }
                 }
@@ -597,7 +598,7 @@ static uint32_t DCD_HandleOutEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                                 /* inform the upper layer that a setup packet is available */
                                 /* SETUP COMPLETE */
                                 USBD_DCD_INT_fops->SetupStage(pdev);
-                                printf("setup7 %d\n",pdev->dev.device_state);
+                                hd_printf("setup7 %d\n",pdev->dev.device_state);
                                 CLEAR_OUT_EP_INTR(epnum, out_setup);
                             }
                         }
@@ -626,7 +627,7 @@ static uint32_t DCD_HandleOutEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                 {
                     pdev->dev.ep0_state = USB_OTG_EP0_SETUP;
                     USBD_DCD_INT_fops->SetupStage(pdev);
-                    printf("setup %d\n",pdev->dev.device_state);
+                    hd_printf("setup %d\n",pdev->dev.device_state);
                 }
                 CLEAR_OUT_EP_INTR(epnum, out_setup);
             }
@@ -689,7 +690,7 @@ static uint32_t DCD_HandleOutEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                     if((epnum == 0u) && (pdev->dev.device_state == USB_OTG_EP0_STATUS_OUT))
                     {
                         /* prepare to rx more setup packets */
-                        ///printf("status out\n");
+                        ///hd_printf("status out\n");
                         USB_OTG_EP0_OutStart(pdev);
                         pdev->dev.device_state = USB_OTG_EP0_IDLE;
                     }
@@ -776,13 +777,13 @@ static uint32_t DCD_HandleRxStatusQueueLevel_ISR(USB_OTG_CORE_HANDLE *pdev)
             if (status.b.bcnt)
             {
                 //if (status.b.epnum == 2)
-                //    printf("ep%d cnt %d\n",status.b.epnum,status.b.bcnt);
+                //    hd_printf("ep%d cnt %d\n",status.b.epnum,status.b.bcnt);
                 USB_OTG_ReadPacket(pdev,ep->xfer_buff, (uint16_t)status.b.bcnt);
                 ep->xfer_buff += status.b.bcnt;
                 ep->xfer_count += status.b.bcnt;
             } else
             {
-                ;//printf("ep%d cnt %d\n",status.b.epnum,status.b.bcnt);
+                ;//hd_printf("ep%d cnt %d\n",status.b.epnum,status.b.bcnt);
             }
             break;
         case STS_XFER_COMP:
@@ -791,7 +792,7 @@ static uint32_t DCD_HandleRxStatusQueueLevel_ISR(USB_OTG_CORE_HANDLE *pdev)
             break;
         case STS_SETUP_UPDT:
             /* Copy the setup packet received in FIFO into the setup buffer in RAM */
-            //printf("ep%d setup %d\n",status.b.epnum,status.b.bcnt);
+            //hd_printf("ep%d setup %d\n",status.b.epnum,status.b.bcnt);
             USB_OTG_ReadPacket(pdev , pdev->dev.setup_packet, 8u);
             ep->xfer_count += status.b.bcnt;
             break;
@@ -829,7 +830,7 @@ static uint32_t DCD_WriteEmptyTxFifo(USB_OTG_CORE_HANDLE *pdev, uint32_t epnum)
 
     len32b = (len + 3u) / 4u;
     txstatus.b = *(__IO stc_bUSB_OTG_DTXFSTSn_t*)&USB_OTG_READ_REG32( &pdev->regs.INEP_REGS[epnum]->DTXFSTS);  /* C-STAT */
-    //printf("ep%d tx len %d\n",epnum,len);
+    //hd_printf("ep%d tx len %d\n",epnum,len);
 
     while ((txstatus.b.txfspcavail > len32b) && (ep->xfer_count < ep->xfer_len) && (ep->xfer_len != 0u))
     {
@@ -876,7 +877,7 @@ static uint32_t DCD_HandleUsbReset_ISR(USB_OTG_CORE_HANDLE *pdev)
     dcfg.d32 = 0ul;
     gintsts.d32 = 0ul;
 
-    printf("%s\n",__FUNCTION__);
+    hd_printf("%s\n",__FUNCTION__);
     /* Clear the Remote Wake-up Signaling */
     dctl.b.rmtwkupsig = 1u;
     USB_OTG_MODIFY_REG32(&pdev->regs.DREGS->DCTL, dctl.d32, 0ul );
@@ -917,7 +918,7 @@ static uint32_t DCD_HandleUsbReset_ISR(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_WRITE_REG32( &pdev->regs.DREGS->DCFG, dcfg.d32);
 
     /* setup EP0 to receive SETUP packets */
-    printf("reset\n");
+    hd_printf("reset\n");
     USB_OTG_EP0_OutStart(pdev);
 
     /* Clear interrupt */

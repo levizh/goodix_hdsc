@@ -116,6 +116,7 @@ uint32_t DCD_GetEPStatus(USB_OTG_CORE_HANDLE *pdev, uint8_t epnum);
 void DCD_SetEPStatus (USB_OTG_CORE_HANDLE *pdev ,
                       uint8_t epnum ,
                       uint32_t Status);
+uint32_t DCD_PHY_SuspendStatus(USB_OTG_CORE_HANDLE *pdev);
 
 #endif //__DCD_H__
 

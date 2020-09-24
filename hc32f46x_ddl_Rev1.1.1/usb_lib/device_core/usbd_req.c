@@ -54,7 +54,8 @@
 /*******************************************************************************
  * Include files
  ******************************************************************************/
-#include <stdio.h>
+//#include <stdio.h>
+#include "hc32f46x_utility.h"
 #include "usbd_req.h"
 #include "usbd_ioreq.h"
 #include "usbd_desc.h"
@@ -595,7 +596,7 @@ static void USBD_SetConfig(USB_OTG_CORE_HANDLE  *pdev,
                 }
                 break;
             case USB_OTG_SUSPENDED:
-                printf("set cfg fail,suspended\n");
+                hd_printf("set cfg fail,suspended\n");
                 break;
             default:
                 USBD_CtlError(pdev);
@@ -796,7 +797,7 @@ void USBD_CtlError( USB_OTG_CORE_HANDLE  *pdev)  /* MISRAC 2004*/
 {
     DCD_EP_Stall(pdev , 0x80u);
     DCD_EP_Stall(pdev , 0u);
-    printf("ctl error\n");
+    hd_printf("ctl error\n");
     USB_OTG_EP0_OutStart(pdev);
 }
 

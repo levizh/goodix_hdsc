@@ -204,7 +204,7 @@ static uint32_t USB_OTG_HandleSessionRequest_ISR(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_GINTSTS_TypeDef  gintsts;
     USB_OTG_GOTGCTL_TypeDef   gotgctl;
 
-    printf("SRP IRQ\n");
+    hd_printf("SRP IRQ\n");
     gotgctl.d32 = 0ul;
     gintsts.d32 = 0ul;
 

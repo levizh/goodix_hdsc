@@ -97,98 +97,6 @@ void USB_IRQ_Handler(void)
 
 /**
  ******************************************************************************
- ** \brief  Initialize the system clock for the sample
- **
- ** \param  None
- **
- ** \return None
- ******************************************************************************/
-static void SysClkIni(void)
-{
-    en_clk_sys_source_t     enSysClkSrc;
-    stc_clk_sysclk_cfg_t    stcSysClkCfg;
-    stc_clk_xtal_cfg_t      stcXtalCfg;
-    stc_clk_mpll_cfg_t      stcMpllCfg;
-//    stc_clk_output_cfg_t    stcOutputClkCfg;
-    stc_clk_upll_cfg_t      stcUpllCfg;
-
-    MEM_ZERO_STRUCT(enSysClkSrc);
-    MEM_ZERO_STRUCT(stcSysClkCfg);
-    MEM_ZERO_STRUCT(stcXtalCfg);
-    MEM_ZERO_STRUCT(stcMpllCfg);
-
-    /* Set bus clk div. */
-    stcSysClkCfg.enHclkDiv = ClkSysclkDiv1;
-    stcSysClkCfg.enExclkDiv = ClkSysclkDiv2;
-    stcSysClkCfg.enPclk0Div = ClkSysclkDiv1;
-    stcSysClkCfg.enPclk1Div = ClkSysclkDiv2;
-    stcSysClkCfg.enPclk2Div = ClkSysclkDiv4;
-    stcSysClkCfg.enPclk3Div = ClkSysclkDiv4;
-    stcSysClkCfg.enPclk4Div = ClkSysclkDiv2;
-    CLK_SysClkConfig(&stcSysClkCfg);
-
-    /* Switch system clock source to MPLL. */
-    /* Use Xtal32 as MPLL source. */
-    stcXtalCfg.enMode = ClkXtalModeOsc;
-    stcXtalCfg.enDrv = ClkXtalLowDrv;
-    stcXtalCfg.enFastStartup = Enable;
-    CLK_XtalConfig(&stcXtalCfg);
-    CLK_XtalCmd(Enable);
-
-    /* MPLL config. */
-    stcMpllCfg.pllmDiv = 1u;
-    stcMpllCfg.plln = 48u;
-    stcMpllCfg.PllpDiv = 4u;    //MPLLP = 96
-    stcMpllCfg.PllqDiv = 8u;
-    stcMpllCfg.PllrDiv = 8u;
-    CLK_SetPllSource(ClkPllSrcXTAL);
-    CLK_MpllConfig(&stcMpllCfg);
-
-    /* flash read wait cycle setting */
-    EFM_Unlock();
-    EFM_SetLatency(EFM_LATENCY_4);
-    EFM_Lock();
-
-    /* Enable MPLL. */
-    CLK_MpllCmd(Enable);
-    /* Wait MPLL ready. */
-    while(Set != CLK_GetFlagStatus(ClkFlagMPLLRdy))
-    {
-        ;
-    }
-
-    /* Switch system clock source to MPLL. */
-    CLK_SetSysClkSource(CLKSysSrcMPLL);
-
-    stcUpllCfg.pllmDiv = 2u;
-    stcUpllCfg.plln = 84u;
-    stcUpllCfg.PllpDiv = 7u;//48M
-    stcUpllCfg.PllqDiv = 7u;
-    stcUpllCfg.PllrDiv = 7u;
-    CLK_UpllConfig(&stcUpllCfg);
-    CLK_UpllCmd(Enable);
-    /* Wait UPLL ready. */
-    while(Set != CLK_GetFlagStatus(ClkFlagUPLLRdy))
-    {
-        ;
-    }
-
-    /* Set USB clock source */
-    CLK_SetUsbClkSource(ClkUsbSrcUpllp);
-
-#if 0
-    /* Clk output.*/
-    stcOutputClkCfg.enOutputSrc = ClkOutputSrcMpllp;
-    stcOutputClkCfg.enOutputDiv = ClkOutputDiv8;
-    CLK_OutputClkConfig(ClkOutputCh1,&stcOutputClkCfg);
-    CLK_OutputClkCmd(ClkOutputCh1,Enable);
-
-    PORT_SetFunc(PortA, Pin08, Func_Mclkout, Disable);
-#endif
-}
-
-/**
- ******************************************************************************
  ** \brief  Initilizes BSP configurations
  **
  ** \param  None
@@ -197,12 +105,9 @@ static void SysClkIni(void)
 void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 {
     stc_port_init_t stcPortInit;
-    /* clock config */
-    SysClkIni();
 
     MEM_ZERO_STRUCT(stcPortInit);
 
-    Ddl_UartInit();
     hd_printf("USBFS start !!\n");
 
     /* port config */

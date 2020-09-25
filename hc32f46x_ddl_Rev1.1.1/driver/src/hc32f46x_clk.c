@@ -330,13 +330,13 @@ void CLK_XtalConfig(const stc_clk_xtal_cfg_t *pstcXtalCfg)
 {
     if(NULL != pstcXtalCfg)
     {
-        ENABLE_CLOCK_REG_WRITE();
+//        ENABLE_CLOCK_REG_WRITE();
 
         M4_SYSREG->CMU_XTALCFGR_f.SUPDRV = pstcXtalCfg->enFastStartup;
         M4_SYSREG->CMU_XTALCFGR_f.XTALMS = pstcXtalCfg->enMode;
         M4_SYSREG->CMU_XTALCFGR_f.XTALDRV = pstcXtalCfg->enDrv;
 
-        DISABLE_CLOCK_REG_WRITE();
+//        DISABLE_CLOCK_REG_WRITE();
     }
     else
     {
@@ -420,7 +420,7 @@ en_result_t CLK_XtalCmd(en_functional_state_t enNewState)
 
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    ENABLE_CLOCK_REG_WRITE();
+//    ENABLE_CLOCK_REG_WRITE();
 
     if(Disable == enNewState)
     {
@@ -446,15 +446,15 @@ en_result_t CLK_XtalCmd(en_functional_state_t enNewState)
     }
     else
     {
-         M4_SYSREG->CMU_XTALCR_f.XTALSTP = 0u;
-         do
+        M4_SYSREG->CMU_XTALCR_f.XTALSTP = 0u;
+        do
         {
             status = CLK_GetFlagStatus(ClkFlagXTALRdy);
             timeout++;
         }while((timeout < CLK_XTAL_TIMEOUT) && (status != Set));
     }
 
-    DISABLE_CLOCK_REG_WRITE();
+//    DISABLE_CLOCK_REG_WRITE();
 
     return enRet;
 }
@@ -809,7 +809,7 @@ void CLK_MpllConfig(const stc_clk_mpll_cfg_t *pstcMpllCfg)
         DDL_ASSERT(IS_PLL_VCO_OUT_VALID(vcoOut));
 #endif /* #ifdef __DEBUG */
 
-        ENABLE_CLOCK_REG_WRITE();
+//        ENABLE_CLOCK_REG_WRITE();
 
         M4_SYSREG->CMU_PLLCFGR_f.MPLLP = pstcMpllCfg->PllpDiv - 1ul;
         M4_SYSREG->CMU_PLLCFGR_f.MPLLQ = pstcMpllCfg->PllqDiv - 1ul;
@@ -817,7 +817,7 @@ void CLK_MpllConfig(const stc_clk_mpll_cfg_t *pstcMpllCfg)
         M4_SYSREG->CMU_PLLCFGR_f.MPLLN = pstcMpllCfg->plln - 1ul;
         M4_SYSREG->CMU_PLLCFGR_f.MPLLM = pstcMpllCfg->pllmDiv - 1ul;
 
-        DISABLE_CLOCK_REG_WRITE();
+//        DISABLE_CLOCK_REG_WRITE();
     }
     else
     {
@@ -846,7 +846,7 @@ en_result_t CLK_MpllCmd(en_functional_state_t enNewState)
 
     DDL_ASSERT(IS_FUNCTIONAL_STATE(enNewState));
 
-    ENABLE_CLOCK_REG_WRITE();
+//    ENABLE_CLOCK_REG_WRITE();
 
     if(Disable == enNewState)
     {
@@ -869,7 +869,7 @@ en_result_t CLK_MpllCmd(en_functional_state_t enNewState)
         }while((timeout < CLK_MPLL_TIMEOUT) && (status != Set));
     }
 
-    DISABLE_CLOCK_REG_WRITE();
+//    DISABLE_CLOCK_REG_WRITE();
 
     return enRet;
 }
@@ -1012,11 +1012,11 @@ void CLK_SetSysClkSource(en_clk_sys_source_t enTargetSysSrc)
     }
 
     /* Switch to target system clock source. */
-    ENABLE_CLOCK_REG_WRITE();
+//    ENABLE_CLOCK_REG_WRITE();
 
     M4_SYSREG->CMU_CKSWR_f.CKSW = enTargetSysSrc;
 
-    DISABLE_CLOCK_REG_WRITE();
+//    DISABLE_CLOCK_REG_WRITE();
 
     timeout = 0ul;
     do
@@ -1104,7 +1104,7 @@ void CLK_SysClkConfig(const stc_clk_sysclk_cfg_t *pstcSysclkCfg)
         }
 
         /* Switch to target system clock division. */
-        ENABLE_CLOCK_REG_WRITE();
+//        ENABLE_CLOCK_REG_WRITE();
 
         M4_SYSREG->CMU_SCFGR = ( (uint32_t)pstcSysclkCfg->enPclk0Div           |
                                 ((uint32_t)pstcSysclkCfg->enPclk1Div << 4u)    |
@@ -1115,7 +1115,7 @@ void CLK_SysClkConfig(const stc_clk_sysclk_cfg_t *pstcSysclkCfg)
                                 ((uint32_t)pstcSysclkCfg->enHclkDiv << 24u)    |
                                 ((uint32_t)pstcSysclkCfg->enHclkDiv << 28u));
 
-        DISABLE_CLOCK_REG_WRITE();
+//        DISABLE_CLOCK_REG_WRITE();
 
         timeout = 0ul;
         do

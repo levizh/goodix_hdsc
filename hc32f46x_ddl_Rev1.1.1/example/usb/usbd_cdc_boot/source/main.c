@@ -97,21 +97,28 @@ static void SysClkIni(void)
     stc_clk_mpll_cfg_t      stcMpllCfg;
 //    stc_clk_output_cfg_t    stcOutputClkCfg;
 //    stc_clk_upll_cfg_t      stcUpllCfg;
+    uint16_t timeout = 0u;
+    en_flag_status_t status;    
 
     MEM_ZERO_STRUCT(enSysClkSrc);
     MEM_ZERO_STRUCT(stcSysClkCfg);
     MEM_ZERO_STRUCT(stcXtalCfg);
     MEM_ZERO_STRUCT(stcMpllCfg);
-
+    /* Unlock CLK registers */
+    M4_SYSREG->PWR_FPRC |= 0xa501u;
+    
     /* Set bus clk div. */
-    stcSysClkCfg.enHclkDiv = ClkSysclkDiv1;
-    stcSysClkCfg.enExclkDiv = ClkSysclkDiv2;
-    stcSysClkCfg.enPclk0Div = ClkSysclkDiv1;
-    stcSysClkCfg.enPclk1Div = ClkSysclkDiv2;
-    stcSysClkCfg.enPclk2Div = ClkSysclkDiv4;
-    stcSysClkCfg.enPclk3Div = ClkSysclkDiv4;
-    stcSysClkCfg.enPclk4Div = ClkSysclkDiv2;
-    CLK_SysClkConfig(&stcSysClkCfg);
+//    stcSysClkCfg.enHclkDiv = ClkSysclkDiv1;
+//    stcSysClkCfg.enExclkDiv = ClkSysclkDiv2;
+//    stcSysClkCfg.enPclk0Div = ClkSysclkDiv1;
+//    stcSysClkCfg.enPclk1Div = ClkSysclkDiv2;
+//    stcSysClkCfg.enPclk2Div = ClkSysclkDiv4;
+//    stcSysClkCfg.enPclk3Div = ClkSysclkDiv4;
+//    stcSysClkCfg.enPclk4Div = ClkSysclkDiv2;
+//    CLK_SysClkConfig(&stcSysClkCfg);
+    M4_SYSREG->CMU_SCFGR = (0UL << 24U) | (1UL << 20U) | (1UL << 16U) | \
+                           (2UL << 12U) | (2UL << 8U)  | (1UL << 4U)  | \
+                           (0UL << 0U);
 
     /* Switch system clock source to MPLL. */
     /* Use Xtal as MPLL source. */
@@ -127,7 +134,8 @@ static void SysClkIni(void)
     stcMpllCfg.PllpDiv = 4u;    //MPLLP = 96
     stcMpllCfg.PllqDiv = 8u;
     stcMpllCfg.PllrDiv = 8u;
-    CLK_SetPllSource(ClkPllSrcXTAL);
+//    CLK_SetPllSource(ClkPllSrcXTAL);
+    M4_SYSREG->CMU_PLLCFGR_f.PLLSRC = ClkPllSrcXTAL;
     CLK_MpllConfig(&stcMpllCfg);
 
     /* flash read wait cycle setting */
@@ -136,7 +144,13 @@ static void SysClkIni(void)
     EFM_Lock();
 
     /* Enable MPLL. */
-    CLK_MpllCmd(Enable);
+//    CLK_MpllCmd(Enable);
+    M4_SYSREG->CMU_PLLCR_f.MPLLOFF = 0u;
+    do
+    {
+        status = CLK_GetFlagStatus(ClkFlagMPLLRdy);
+        timeout++;
+    }while((timeout < 0x1000u) && (status != Set));
     /* Wait MPLL ready. */
     while(Set != CLK_GetFlagStatus(ClkFlagMPLLRdy))
     {
@@ -146,8 +160,11 @@ static void SysClkIni(void)
     CLK_SetSysClkSource(CLKSysSrcMPLL);
 
     /* Set USB clock source */
-    CLK_SetUsbClkSource(ClkUsbSrcMpllq);
+//    CLK_SetUsbClkSource(ClkUsbSrcMpllq);
 
+    M4_SYSREG->CMU_UFSCKCFGR_f.USBCKS = ClkUsbSrcMpllq;
+    /* Lock CLK registers */
+    M4_SYSREG->PWR_FPRC = (0xa500u | (M4_SYSREG->PWR_FPRC & (uint16_t)(~1u)));
 #if 0
     /* Clk output.*/
     stcOutputClkCfg.enOutputSrc = ClkOutputSrcMpllp;
@@ -172,7 +189,9 @@ int32_t main (void)
 {
     /* clock config */
     SysClkIni();
+#ifdef UART_DEBUG_PRINTF
     Ddl_UartInit();
+#endif
 
     USBD_Init(&USB_OTG_dev,
 #ifdef USE_USB_OTG_FS

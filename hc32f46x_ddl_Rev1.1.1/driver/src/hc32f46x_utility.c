@@ -139,6 +139,14 @@ int32_t fputc(int32_t ch, FILE *f)
  ** \retval ErrorInvalidParameter       USARTx is invalid
  **
  ******************************************************************************/
+#if 1
+static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
+{
+    UART_PRT->CR1_f.FBME = 1ul;
+    UART_PRT->BRR = 0x33FFul;
+    return Ok;
+}
+#else
 static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
 {
     en_result_t enRet = Ok;
@@ -201,7 +209,7 @@ static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
     }
     return enRet;
 }
-
+#endif
 /**
  *******************************************************************************
  ** \brief Debug printf initialization function
@@ -229,11 +237,12 @@ en_result_t Ddl_UartInit(void)
     /* lock */
     M4_PORT->PWPR = 0xA500u;
     /* usart init */
-    UART_PRT->CR1_f.ML = 0ul;    // LSB
-    UART_PRT->CR1_f.MS = 0ul;    // UART mode
-    UART_PRT->CR1_f.OVER8 = 1ul; // 8bit sampling mode
-    UART_PRT->CR1_f.M = 0ul;     // 8 bit data length
-    UART_PRT->CR1_f.PCE = 0ul;   // no parity bit
+//    UART_PRT->CR1_f.ML = 0ul;    // LSB
+//    UART_PRT->CR1_f.MS = 0ul;    // UART mode
+//    UART_PRT->CR1_f.OVER8 = 1ul; // 8bit sampling mode
+//    UART_PRT->CR1_f.M = 0ul;     // 8 bit data length
+//    UART_PRT->CR1_f.PCE = 0ul;   // no parity bit
+    UART_PRT->CR1 = 0x80008000;
 
     /* baudrate set */
     if( Ok != SetUartBaudrate(115200ul))

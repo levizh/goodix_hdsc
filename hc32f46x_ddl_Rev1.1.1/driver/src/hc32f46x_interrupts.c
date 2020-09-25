@@ -540,7 +540,7 @@ void IRQ006_Handler(void)
         IrqHandler[Int006_IRQn]();
     }
 }
-
+#if 0
 /**
  *******************************************************************************
  ** \brief Int No.007 IRQ handler
@@ -3833,7 +3833,7 @@ void IRQ143_Handler(void)
         }
     }
 }
-
+#endif
 //@} // InterruptGroup
 
 #endif /* DDL_INTERRUPTS_ENABLE */

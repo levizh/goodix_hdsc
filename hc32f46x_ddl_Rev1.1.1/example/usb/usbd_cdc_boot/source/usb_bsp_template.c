@@ -117,13 +117,14 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
     stcPortInit.enPinMode = Pin_Mode_Ana;
     PORT_Init(PortA, Pin11, &stcPortInit);
     PORT_Init(PortA, Pin12, &stcPortInit);
-    //PORT_SetFunc(PortA, Pin08, Func_UsbF, Disable); //SOF
+//    PORT_SetFunc(PortA, Pin08, Func_UsbF, Disable); //SOF
 //    PORT_SetFunc(PortA, Pin09, Func_UsbF, Disable); //VBUS
 
     PORT_SetFunc(PortA, Pin11, Func_UsbF, Disable); //DM
     PORT_SetFunc(PortA, Pin12, Func_UsbF, Disable); //DP
 
-    PWC_Fcg1PeriphClockCmd(PWC_FCG1_PERIPH_USBFS, Enable);
+//    PWC_Fcg1PeriphClockCmd(PWC_FCG1_PERIPH_USBFS, Enable);
+    M4_MSTP->FCG1_f.USBFS = 0ul;
 }
 
 /**
@@ -135,8 +136,8 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 void USB_OTG_BSP_EnableInterrupt(void)
 {
     stc_irq_regi_conf_t stcIrqRegiConf;
-    /* Register INT_USBFS_GLB Int to Vect.No.030 */
-    stcIrqRegiConf.enIRQn = Int030_IRQn;
+    /* Register INT_USBFS_GLB Int to Vect.No.006 */
+    stcIrqRegiConf.enIRQn = Int006_IRQn;
     /* Select INT_USBFS_GLB interrupt function */
     stcIrqRegiConf.enIntSrc = INT_USBFS_GLB;
     /* Callback function */

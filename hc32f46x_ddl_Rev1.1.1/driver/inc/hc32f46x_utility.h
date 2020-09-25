@@ -79,8 +79,13 @@ extern "C"
 /*******************************************************************************
  * Global pre-processor symbols/macros ('#define')
  ******************************************************************************/
-#define UART_DEBUG_PRINTF
-#define hd_printf printf//(void)
+//#define UART_DEBUG_PRINTF
+
+#ifdef UART_DEBUG_PRINTF
+    #define hd_printf printf
+#else
+    #define hd_printf(fmt, ...)
+#endif
 
 /*******************************************************************************
  * Global variable definitions ('extern')

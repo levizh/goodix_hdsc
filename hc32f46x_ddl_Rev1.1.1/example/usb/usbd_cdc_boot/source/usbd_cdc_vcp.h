@@ -95,6 +95,7 @@ typedef struct
 /*******************************************************************************
  * Global function prototypes (definition in C source)
  ******************************************************************************/
+uint16_t CDC_Transmit_FS (uint8_t* pBuf, uint32_t Len);
 
 #ifdef __cplusplus
 }

@@ -424,7 +424,6 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
 
     hd_printf("suspend !!\n");
     prev_status = pdev->dev.device_status;
-    USBD_DCD_INT_fops->Suspend (pdev);
 
     dsts.b = *(__IO stc_bUSB_OTG_DSTS_t*)&USB_OTG_READ_REG32(&pdev->regs.DREGS->DSTS);   /* C-STAT */
 
@@ -437,6 +436,7 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
        (pdev->cfg.low_power) && (dsts.b.suspsts == 1u)  &&
        (pdev->dev.connection_status == 1u))
     {
+        USBD_DCD_INT_fops->Suspend (pdev);
 
         /*  switch-off the clocks */
         power.d32 = 0ul;

@@ -433,10 +433,11 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
     gintsts.b.usbsuspend = 1u;
     USB_OTG_WRITE_REG32(&pdev->regs.GREGS->GINTSTS, gintsts.d32);
 
-    if((prev_status  == USB_OTG_CONFIGURED) &&
+    if(((prev_status  == USB_OTG_CONFIGURED) || (prev_status  == USB_OTG_ADDRESSED)) &&
        (pdev->cfg.low_power) && (dsts.b.suspsts == 1u)  &&
        (pdev->dev.connection_status == 1u))
     {
+
         /*  switch-off the clocks */
         power.d32 = 0ul;
         power.b.stoppclk = 1u;

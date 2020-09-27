@@ -54,6 +54,7 @@
  ******************************************************************************/
 #include "usb_bsp.h"
 #include "hc32_ddl.h"
+#include "misc.h"
 
 /*******************************************************************************
  * Local type definitions ('typedef')
@@ -117,7 +118,7 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
     stcPortInit.enPinMode = Pin_Mode_Ana;
     PORT_Init(PortA, Pin11, &stcPortInit);
     PORT_Init(PortA, Pin12, &stcPortInit);
-    //PORT_SetFunc(PortA, Pin08, Func_UsbF, Disable); //SOF
+//    PORT_SetFunc(PortA, Pin08, Func_UsbF, Disable); //SOF
 //    PORT_SetFunc(PortA, Pin09, Func_UsbF, Disable); //VBUS
 
     PORT_SetFunc(PortA, Pin11, Func_UsbF, Disable); //DM
@@ -135,8 +136,8 @@ void USB_OTG_BSP_Init(USB_OTG_CORE_HANDLE *pdev)
 void USB_OTG_BSP_EnableInterrupt(void)
 {
     stc_irq_regi_conf_t stcIrqRegiConf;
-    /* Register INT_USBFS_GLB Int to Vect.No.030 */
-    stcIrqRegiConf.enIRQn = Int030_IRQn;
+    /* Register INT_USBFS_GLB Int to Vect.No.006 */
+    stcIrqRegiConf.enIRQn = Int006_IRQn;
     /* Select INT_USBFS_GLB interrupt function */
     stcIrqRegiConf.enIntSrc = INT_USBFS_GLB;
     /* Callback function */
@@ -144,11 +145,14 @@ void USB_OTG_BSP_EnableInterrupt(void)
     /* Registration IRQ */
     enIrqRegistration(&stcIrqRegiConf);
     /* Clear Pending */
-    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
-    /* Set priority */
-    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
-    /* Enable NVIC */
-    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+//    /* Set priority */
+//    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
+//    /* Enable NVIC */
+//    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 }
 
 /**

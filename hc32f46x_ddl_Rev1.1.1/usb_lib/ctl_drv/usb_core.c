@@ -1490,14 +1490,9 @@ void USB_OTG_ActiveRemoteWakeup(USB_OTG_CORE_HANDLE *pdev)
                 power.b.stoppclk = 0u;
                 USB_OTG_WRITE_REG32(pdev->regs.PCGCCTL, power.d32);
             }
-            /* active Remote wakeup signaling */
-            dctl.d32 = 0u;
-            dctl.b.rmtwkupsig = 1u;
-            USB_OTG_MODIFY_REG32(&pdev->regs.DREGS->DCTL, 0ul, dctl.d32);
-            USB_OTG_BSP_mDelay(5ul);
-            USB_OTG_MODIFY_REG32(&pdev->regs.DREGS->DCTL, dctl.d32, 0ul );
         }
     }
+    /* active Remote wakeup signaling */
     dctl.d32 = 0ul;
     dctl.b.rmtwkupsig = 1u;
     USB_OTG_MODIFY_REG32(&pdev->regs.DREGS->DCTL, 0ul, dctl.d32);

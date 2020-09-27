@@ -69,6 +69,7 @@
   Global function prototypes (definition in C source)
  ******************************************************************************/
 void HAL_NVIC_SetPriority(IRQn_Type IRQn, uint32_t PreemptPriority, uint32_t SubPriority);
+void HAL_NVIC_ClearPendingIRQ(IRQn_Type IRQn);
 void HAL_NVIC_EnableIRQ(IRQn_Type IRQn);
 void HAL_NVIC_DisableIRQ(IRQn_Type IRQn);
 uint8_t SpiFlash_WriteReadByte(uint8_t u8Data);

@@ -96,29 +96,29 @@
 #define SPI_MASTER_DMA_RX_INT_SRC       (INT_DMA2_TC0)
 #define SPI_DMA_RX_TRIG_SOURCE          (EVT_SPI3_SPRI)
 
-#define DP_PORT                 (PortA)
-#define DP_PIN                  (Pin12)
-#define DP_EXINT_CH             (ExtiCh12)
-#define DP_INT_IRQN             (Int010_IRQn)
-#define DP_INT_SRC              (INT_PORT_EIRQ12)
+#define DP_PORT                         (PortA)
+#define DP_PIN                          (Pin12)
+#define DP_EXINT_CH                     (ExtiCh12)
+#define DP_INT_IRQn                     (Int002_IRQn)
+#define DP_INT_SRC                      (INT_PORT_EIRQ12)
 
-#define DM_PORT                 (PortA)
-#define DM_PIN                  (Pin11)
-#define DM_EXINT_CH             (ExtiCh11)
-#define DM_INT_IRQN             (Int011_IRQn)
-#define DM_INT_SRC              (INT_PORT_EIRQ11)
+#define DM_PORT                         (PortA)
+#define DM_PIN                          (Pin11)
+#define DM_EXINT_CH                     (ExtiCh11)
+#define DM_INT_IRQn                     (Int003_IRQn)
+#define DM_INT_SRC                      (INT_PORT_EIRQ11)
 
-#define EC_PORT                 (PortA)
-#define EC_PIN                  (Pin05)
-#define EC_EXINT_CH             (ExtiCh05)
-#define EC_INT_IRQN             (Int012_IRQn)
-#define EC_INT_SRC              (INT_PORT_EIRQ5)
+#define EC_PORT                         (PortA)
+#define EC_PIN                          (Pin05)
+#define EC_EXINT_CH                     (ExtiCh05)
+#define EC_INT_IRQn                     (Int004_IRQn)
+#define EC_INT_SRC                      (INT_PORT_EIRQ5)
 
-#define FP_PORT                 (PortA)
-#define FP_PIN                  (Pin00)
-#define FP_EXINT_CH             (ExtiCh00)
-#define FP_INT_IRQN             (Int013_IRQn)
-#define FP_INT_SRC              (INT_PORT_EIRQ0)
+#define FP_PORT                         (PortA)
+#define FP_PIN                          (Pin00)
+#define FP_EXINT_CH                     (ExtiCh00)
+#define FP_INT_IRQn                     (Int005_IRQn)
+#define FP_INT_SRC                      (INT_PORT_EIRQ0)
 
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
@@ -160,6 +160,17 @@ void HAL_NVIC_SetPriority(IRQn_Type IRQn, uint32_t PreemptPriority, uint32_t Sub
 void HAL_NVIC_EnableIRQ(IRQn_Type IRQn)
 {
     NVIC_EnableIRQ(IRQn);
+}
+
+/**
+ *******************************************************************************
+ ** \brief  NVIC clear pending
+ ** \param  None
+ ** \retval None
+ ******************************************************************************/
+void HAL_NVIC_ClearPendingIRQ(IRQn_Type IRQn)
+{
+    NVIC_ClearPendingIRQ(IRQn);
 }
 
 /**
@@ -402,6 +413,9 @@ en_result_t HAL_SPI_Receive_DMA(const M4_SPI_TypeDef *SPIx, uint8_t pu8Data[], u
  ******************************************************************************/
 void USB_DP_ExintCallback(void)
 {
+    /* add your code here */
+    HAL_NVIC_DisableIRQ(DP_INT_IRQn);
+    EXINT_IrqFlgClr(DP_EXINT_CH);
 }
 
 /**
@@ -412,6 +426,9 @@ void USB_DP_ExintCallback(void)
  ******************************************************************************/
 void USB_DM_ExintCallback(void)
 {
+    /* add your code here */
+    HAL_NVIC_DisableIRQ(DM_INT_IRQn);
+    EXINT_IrqFlgClr(DM_EXINT_CH);
 }
 
 /**
@@ -469,21 +486,27 @@ void USB_DPDMWakeupConfig(void)
 
     /* Select External Int Ch.12 */
     stcIrqRegiConf.enIntSrc = DP_INT_SRC;
-    stcIrqRegiConf.enIRQn = DP_INT_IRQN;
+    stcIrqRegiConf.enIRQn = DP_INT_IRQn;
     stcIrqRegiConf.pfnCallback = &USB_DP_ExintCallback;
     enIrqRegistration(&stcIrqRegiConf);
-    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
-    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
-    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
+//    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 
     /* Select External Int Ch.11 */
     stcIrqRegiConf.enIntSrc = DM_INT_SRC;
-    stcIrqRegiConf.enIRQn = DM_INT_IRQN;
+    stcIrqRegiConf.enIRQn = DM_INT_IRQn;
     stcIrqRegiConf.pfnCallback = &USB_DM_ExintCallback;
     enIrqRegistration(&stcIrqRegiConf);
-    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
-    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
-    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
+//    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 
     /* Enbale exint ch11 and ch12 wakeup from stop mode */
     enIntWakeupEnable(Extint12WU | Extint11WU);
@@ -533,12 +556,15 @@ void EcIntConfig(void)
 
     /* Select External Int Ch.11 */
     stcIrqRegiConf.enIntSrc = EC_INT_SRC;
-    stcIrqRegiConf.enIRQn = EC_INT_IRQN;
+    stcIrqRegiConf.enIRQn = EC_INT_IRQn;
     stcIrqRegiConf.pfnCallback = &EC_ExintCallback;
     enIrqRegistration(&stcIrqRegiConf);
-    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
-    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
-    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
+//    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 2, 1);
+    HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 }
 
 /**
@@ -579,12 +605,15 @@ void FPIntConfig(void)
 
     /* Select External Int Ch.11 */
     stcIrqRegiConf.enIntSrc = FP_INT_SRC;
-    stcIrqRegiConf.enIRQn = FP_INT_IRQN;
+    stcIrqRegiConf.enIRQn = FP_INT_IRQn;
     stcIrqRegiConf.pfnCallback = &FP_ExintCallback;
     enIrqRegistration(&stcIrqRegiConf);
-    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
-    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
-    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+//    NVIC_SetPriority(stcIrqRegiConf.enIRQn, DDL_IRQ_PRIORITY_15);
+//    NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
+    HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 2, 0);
+    HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
 }
 
 /*******************************************************************************

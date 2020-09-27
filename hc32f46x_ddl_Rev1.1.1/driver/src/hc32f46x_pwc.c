@@ -1818,24 +1818,15 @@ void PWC_IrqClkRecover(void)
  ******************************************************************************/
 void PWC_EnterStopMd(void)
 {
-    /* NVIC backup and disable before entry from stop mode.*/
-    PWC_enNvicBackup();
-    /* Clock backup and switch system clock as MRC before entry from stop mode. */
-    PWC_ClkBackup();
-
-    ENABLE_PWR_REG_WRITE();
+    ENABLE_PWR_REG0_WRITE();
 
     M4_SYSREG->PWR_STPMCR_f.STOP = 1u;
     M4_SYSREG->PWR_PWRC0_f.PWDN = 0u;
+    M4_SYSREG->CMU_TPIUCKCFGR=0x88;
 
-    DISABLE_PWR_REG_WRITE();
+    DISABLE_PWR_REG0_WRITE();
 
     __WFI();
-
-    /* Recover HRC/MRC state and system clock after wakeup from stop mode. */
-    PWC_ClkRecover();
-    /* NVIC recover after wakeup from stop mode. */
-    PWC_enNvicRecover();
 }
 
 /**

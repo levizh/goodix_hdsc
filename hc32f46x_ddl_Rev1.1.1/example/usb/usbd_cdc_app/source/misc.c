@@ -565,6 +565,9 @@ void EcIntConfig(void)
     HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
     HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 2, 1);
     HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+
+    /* Enable wakeup */
+    enIntWakeupEnable(Extint5WU);
 }
 
 /**
@@ -614,6 +617,9 @@ void FPIntConfig(void)
     HAL_NVIC_ClearPendingIRQ(stcIrqRegiConf.enIRQn);
     HAL_NVIC_SetPriority(stcIrqRegiConf.enIRQn, 2, 0);
     HAL_NVIC_EnableIRQ(stcIrqRegiConf.enIRQn);
+
+    /* Enable wakeup */
+    enIntWakeupEnable(Extint0WU);
 }
 
 /*******************************************************************************

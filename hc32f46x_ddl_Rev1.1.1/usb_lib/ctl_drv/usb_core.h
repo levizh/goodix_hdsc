@@ -294,6 +294,7 @@ typedef struct USB_OTG_handle
 /*******************************************************************************
  * Global variable definitions ('extern')
  ******************************************************************************/
+void         USB_OTG_EnableUSBCoreClock(USB_OTG_CORE_HANDLE *pdev);
 USB_OTG_STS  USB_OTG_CoreInit        (USB_OTG_CORE_HANDLE *pdev);
 USB_OTG_STS  USB_OTG_SelectCore      (USB_OTG_CORE_HANDLE *pdev,
                                       USB_OTG_CORE_ID_TypeDef coreID);

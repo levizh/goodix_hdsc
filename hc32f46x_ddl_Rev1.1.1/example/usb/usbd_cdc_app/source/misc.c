@@ -123,7 +123,7 @@
 /*******************************************************************************
  * Global variable definitions (declared in header file with 'extern')
  ******************************************************************************/
-
+extern  USB_OTG_CORE_HANDLE      USB_OTG_dev;
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
@@ -527,6 +527,9 @@ void USB_DPDM_PortInit(void)
     stcPortInit.enPinMode = Pin_Mode_Ana;
     PORT_Init(DP_PORT, DP_PIN, &stcPortInit);
     PORT_Init(DM_PORT, DM_PIN, &stcPortInit);
+
+    /* un-gate USB Core clock */
+    USB_OTG_EnableUSBCoreClock(&USB_OTG_dev);
 }
 
 /**

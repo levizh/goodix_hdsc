@@ -412,6 +412,16 @@ void USB_OTG_InitDevSpeed(USB_OTG_CORE_HANDLE *pdev , uint8_t speed)
     USB_OTG_WRITE_REG32(&pdev->regs.DREGS->DCFG, dcfg.d32);
 }
 
+void USB_OTG_EnableUSBCoreClock(USB_OTG_CORE_HANDLE *pdev)
+{
+    USB_OTG_PCGCCTL_TypeDef  power;
+    /* un-gate USB Core clock */
+    power.d32 = USB_OTG_READ_REG32(pdev->regs.PCGCCTL);
+    power.b.gatehclk = 0u;
+    power.b.stoppclk = 0u;
+    USB_OTG_WRITE_REG32(pdev->regs.PCGCCTL, power.d32);
+}
+
 /**
  *******************************************************************************
  ** \brief  USB_OTG_CoreInit
@@ -425,16 +435,12 @@ USB_OTG_STS USB_OTG_CoreInit(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_STS status = USB_OTG_OK;
     USB_OTG_GUSBCFG_TypeDef  usbcfg;
     USB_OTG_GAHBCFG_TypeDef  ahbcfg;
-    USB_OTG_PCGCCTL_TypeDef  power;
 
     usbcfg.d32 = 0ul;
     ahbcfg.d32 = 0ul;
 
     /* un-gate USB Core clock */
-    power.d32 = USB_OTG_READ_REG32(&pdev->regs.PCGCCTL);
-    power.b.gatehclk = 0u;
-    power.b.stoppclk = 0u;
-    USB_OTG_WRITE_REG32(pdev->regs.PCGCCTL, power.d32);
+    USB_OTG_EnableUSBCoreClock(pdev);
 
     USB_OTG_CoreReset(pdev);
 

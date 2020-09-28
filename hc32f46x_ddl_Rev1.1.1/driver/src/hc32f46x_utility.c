@@ -139,7 +139,7 @@ int32_t fputc(int32_t ch, FILE *f)
  ** \retval ErrorInvalidParameter       USARTx is invalid
  **
  ******************************************************************************/
-#if 1
+#if 1   /* modify for goodix */
 static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
 {
     UART_PRT->CR1_f.FBME = 1ul;

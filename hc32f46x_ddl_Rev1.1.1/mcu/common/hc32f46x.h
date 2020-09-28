@@ -47,7 +47,7 @@
  **
  ** History:
  **
- **   - 2020-08-27  1.03   First version for Device Driver Library of HC32F46X series MCU.
+ **   - 2020-09-25  1.03   First version for Device Driver Library of HC32F46X series MCU.
  **
  ******************************************************************************/
 
@@ -472,15 +472,15 @@ typedef enum en_event_src
     EVT_I2C1_RXI            = 420u,
     EVT_I2C1_TXI            = 421u,
     EVT_I2C1_TEI            = 422u,
-    EVT_I2C1_EE1            = 423u,
+    EVT_I2C1_EEI            = 423u,
     EVT_I2C2_RXI            = 424u,
     EVT_I2C2_TXI            = 425u,
     EVT_I2C2_TEI            = 426u,
-    EVT_I2C2_EE1            = 427u,
+    EVT_I2C2_EEI            = 427u,
     EVT_I2C3_RXI            = 428u,
     EVT_I2C3_TXI            = 429u,
     EVT_I2C3_TEI            = 430u,
-    EVT_I2C3_EE1            = 431u,
+    EVT_I2C3_EEI            = 431u,
 
     /* PVD */
     EVT_PVD_PVD1            = 433u,
@@ -795,15 +795,15 @@ typedef enum en_int_src
     INT_I2C1_RXI            = 420u,
     INT_I2C1_TXI            = 421u,
     INT_I2C1_TEI            = 422u,
-    INT_I2C1_EE1            = 423u,
+    INT_I2C1_EEI            = 423u,
     INT_I2C2_RXI            = 424u,
     INT_I2C2_TXI            = 425u,
     INT_I2C2_TEI            = 426u,
-    INT_I2C2_EE1            = 427u,
+    INT_I2C2_EEI            = 427u,
     INT_I2C3_RXI            = 428u,
     INT_I2C3_TXI            = 429u,
     INT_I2C3_TEI            = 430u,
-    INT_I2C3_EE1            = 431u,
+    INT_I2C3_EEI            = 431u,
 
     /* PVD */
     INT_PVD_PVD1            = 433u,
@@ -840,7 +840,7 @@ typedef enum en_int_src
     /* CAN */
     INT_CAN_INT             = 486u,
 
-    IT_MAX                 = 511u,
+    IT_MAX                  = 511u, /* modify for goodix */
 }en_int_src_t;
 
 /******************************************************************************/

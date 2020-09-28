@@ -594,9 +594,6 @@ en_flag_status_t PWC_GetPvdStatus(en_pwc_pvd_t enPvd);
 void PWC_HrcPwrCmd(en_functional_state_t enNewState);
 void PWC_PllPwrCmd(en_functional_state_t enNewState);
 
-void PWC_IrqClkBackup(void);
-void PWC_IrqClkRecover(void);
-
 en_result_t PWC_HS2LS(void);
 en_result_t PWC_LS2HS(void);
 en_result_t PWC_HS2HP(void);

@@ -111,7 +111,7 @@
     (((x) >= EVT_I2S3_TXIRQOUT)  && ((x) <= EVT_I2S3_RXIRQOUT))     ||         \
     (((x) >= EVT_I2S4_TXIRQOUT)  && ((x) <= EVT_I2S4_RXIRQOUT))     ||         \
     (((x) >= EVT_ACMP1)  && ((x) <= EVT_ACMP3))                     ||         \
-    (((x) >= EVT_I2C1_RXI) && ((x) <= EVT_I2C3_EE1))                ||         \
+    (((x) >= EVT_I2C1_RXI) && ((x) <= EVT_I2C3_EEI))                ||         \
     (((x) >= EVT_PVD_PVD1) && ((x) <= EVT_OTS))                     ||         \
     ((x)  == EVT_WDT_REFUDF)                                        ||         \
     (((x) >= EVT_ADC1_EOCA) && ((x) <= EVT_TRNG_END))               ||         \

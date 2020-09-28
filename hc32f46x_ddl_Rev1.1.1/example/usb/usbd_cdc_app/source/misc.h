@@ -68,6 +68,7 @@
 /*******************************************************************************
   Global function prototypes (definition in C source)
  ******************************************************************************/
+void HAL_NVIC_SetPriorityGrouping(uint32_t PriorityGroup);
 void HAL_NVIC_SetPriority(IRQn_Type IRQn, uint32_t PreemptPriority, uint32_t SubPriority);
 void HAL_NVIC_ClearPendingIRQ(IRQn_Type IRQn);
 void HAL_NVIC_EnableIRQ(IRQn_Type IRQn);

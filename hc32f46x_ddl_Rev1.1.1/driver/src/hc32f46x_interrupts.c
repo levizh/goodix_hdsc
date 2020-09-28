@@ -540,7 +540,7 @@ void IRQ006_Handler(void)
         IrqHandler[Int006_IRQn]();
     }
 }
-#if 0
+#if 0   /* modify for goodix */
 /**
  *******************************************************************************
  ** \brief Int No.007 IRQ handler

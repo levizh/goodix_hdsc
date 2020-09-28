@@ -78,7 +78,7 @@
     (M4_SPI4 == (x)))
 
 /*!< Parameter valid check for SS setup delay option */
-#define IS_VALID_SS_SETUP_DEALY_OPTION(x)                                      \
+#define IS_VALID_SS_SETUP_DELAY_OPTION(x)                                      \
 (   (SpiSsSetupDelayTypicalSck1 == (x))         ||                             \
     (SpiSsSetupDelayCustomValue == (x)))
 
@@ -145,7 +145,7 @@
 /*!< Parameter valid check for SCK polarity */
 #define IS_VALID_SCK_POLARITY(x)                                               \
 (   (SpiSckIdleLevelLow == (x))                 ||                             \
-    (SpiSckIdelLevelHigh == (x)))
+    (SpiSckIdleLevelHigh == (x)))
 
 /*!< Parameter valid check for SCK phase */
 #define IS_VALID_SCK_PHASE(x)                                                  \
@@ -223,7 +223,7 @@
 
 /*!< Parameter valid check for irq type */
 #define IS_VALID_IRQ_TYPE(x)                                                   \
-(   (SpiIrqIdel == (x))                         ||                             \
+(   (SpiIrqIdle == (x))                         ||                             \
     (SpiIrqReceive == (x))                      ||                             \
     (SpiIrqSend == (x))                         ||                             \
     (SpiIrqError == (x)))
@@ -324,7 +324,7 @@ en_result_t SPI_Init(M4_SPI_TypeDef *SPIx, const stc_spi_init_t *pstcSpiInitCfg)
     /* Check parameters */
     if((IS_VALID_SPI_UNIT(SPIx)) && (NULL != pstcSpiInitCfg))
     {
-        DDL_ASSERT(IS_VALID_SS_SETUP_DEALY_OPTION(pstcSpiInitCfg->stcDelayConfig.enSsSetupDelayOption));
+        DDL_ASSERT(IS_VALID_SS_SETUP_DELAY_OPTION(pstcSpiInitCfg->stcDelayConfig.enSsSetupDelayOption));
         DDL_ASSERT(IS_VALID_SS_SETUP_DELAY_TIME(pstcSpiInitCfg->stcDelayConfig.enSsSetupDelayTime));
         DDL_ASSERT(IS_VALID_SS_HOLD_DELAY_OPTION(pstcSpiInitCfg->stcDelayConfig.enSsHoldDelayOption));
         DDL_ASSERT(IS_VALID_SS_HOLD_DELAY_TIME(pstcSpiInitCfg->stcDelayConfig.enSsHoldDelayTime));
@@ -939,14 +939,14 @@ en_result_t SPI_SetFirstBitPosition(M4_SPI_TypeDef *SPIx, en_spi_first_bit_posit
  ** \arg M4_SPI4                        SPI unit 4 configuration Address
  **
  ** \param [in] enClkDiv                Clock division
- ** \arg SpiClkDiv2                     Spi pckl1 division 2
- ** \arg SpiClkDiv4                     Spi pckl1 division 4
- ** \arg SpiClkDiv8                     Spi pckl1 division 8
- ** \arg SpiClkDiv16                    Spi pckl1 division 16
- ** \arg SpiClkDiv32                    Spi pckl1 division 32
- ** \arg SpiClkDiv64                    Spi pckl1 division 64
- ** \arg SpiClkDiv128                   Spi pckl1 division 128
- ** \arg SpiClkDiv256                   Spi pckl1 division 256
+ ** \arg SpiClkDiv2                     Spi pclk1 division 2
+ ** \arg SpiClkDiv4                     Spi pclk1 division 4
+ ** \arg SpiClkDiv8                     Spi pclk1 division 8
+ ** \arg SpiClkDiv16                    Spi pclk1 division 16
+ ** \arg SpiClkDiv32                    Spi pclk1 division 32
+ ** \arg SpiClkDiv64                    Spi pclk1 division 64
+ ** \arg SpiClkDiv128                   Spi pclk1 division 128
+ ** \arg SpiClkDiv256                   Spi pclk1 division 256
  **
  ** \retval Ok                          Process successfully done
  ** \retval ErrorInvalidParameter       If one of following cases matches:
@@ -980,7 +980,7 @@ en_result_t SPI_SetClockDiv(M4_SPI_TypeDef *SPIx, en_spi_clk_div_t enClkDiv)
  ** \arg M4_SPI4                        SPI unit 4 configuration Address
  **
  ** \param [in] enIrq                   SPI interrupt request type
- ** \arg SpiIrqIdel                     Spi idle interrupt request
+ ** \arg SpiIrqIdle                     Spi idle interrupt request
  ** \arg SpiIrqReceive                  Spi receive interrupt request
  ** \arg SpiIrqSend                     Spi send interrupt request
  ** \arg SpiIrqError                    Spi error interrupt request
@@ -1007,7 +1007,7 @@ en_result_t SPI_IrqCmd(M4_SPI_TypeDef *SPIx, en_spi_irq_type_t enIrq,
 
         switch (enIrq)
         {
-            case SpiIrqIdel:
+            case SpiIrqIdle:
                 SPIx->CR1_f.IDIE = enNewSta;
                 break;
             case SpiIrqReceive:

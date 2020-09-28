@@ -138,6 +138,17 @@ extern  USB_OTG_CORE_HANDLE      USB_OTG_dev;
 
 /**
  *******************************************************************************
+ ** \brief  NVIC priority group config
+ ** \param  None
+ ** \retval None
+ ******************************************************************************/
+void HAL_NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
+{
+    NVIC_SetPriorityGrouping(PriorityGroup);
+}
+
+/**
+ *******************************************************************************
  ** \brief  NVIC priority config
  ** \param  None
  ** \retval None

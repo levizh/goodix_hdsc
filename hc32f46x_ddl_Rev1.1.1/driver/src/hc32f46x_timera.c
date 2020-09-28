@@ -1434,7 +1434,7 @@ en_result_t TIMERA_HwTriggerInit(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_t
  ** \arg M4_TMRA6                       Timera unit 6 configuration Address
  **
  ** \param [in] pstcHwStartup           Pointer to timera hardware startup configuration
- ** \arg See the struct #stc_timera_hw_startup_cofig_t
+ ** \arg See the struct #stc_timera_hw_startup_config_t
  **
  ** \retval Ok                          Process successfully done
  ** \retval ErrorInvalidParameter       If one of following cases matches:
@@ -1442,7 +1442,7 @@ en_result_t TIMERA_HwTriggerInit(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_t
  **                                     - pstcHwStartup == NULL
  **
  ******************************************************************************/
-en_result_t TIMERA_HwStartupConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_startup_cofig_t *pstcHwStartup)
+en_result_t TIMERA_HwStartupConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_startup_config_t *pstcHwStartup)
 {
     en_result_t enRet = ErrorInvalidParameter;
 
@@ -1475,7 +1475,7 @@ en_result_t TIMERA_HwStartupConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw
  ** \arg M4_TMRA6                       Timera unit 6 configuration Address
  **
  ** \param [in] pstcHwStop              Pointer to timera hardware stop configuration
- ** \arg See the struct #stc_timera_hw_stop_cofig_t
+ ** \arg See the struct #stc_timera_hw_stop_config_t
  **
  ** \retval Ok                          Process successfully done
  ** \retval ErrorInvalidParameter       If one of following cases matches:
@@ -1483,7 +1483,7 @@ en_result_t TIMERA_HwStartupConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw
  **                                     - pstcHwStop == NULL
  **
  ******************************************************************************/
-en_result_t TIMERA_HwStopConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_stop_cofig_t *pstcHwStop)
+en_result_t TIMERA_HwStopConfig(M4_TMRA_TypeDef *TIMERAx, const stc_timera_hw_stop_config_t *pstcHwStop)
 {
     en_result_t enRet = ErrorInvalidParameter;
 

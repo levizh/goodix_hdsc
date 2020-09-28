@@ -589,16 +589,16 @@ uint8_t  usbd_cdc_DataOut (void *pdev, uint8_t epnum)
   */
 uint8_t  usbd_cdc_SOF (void *pdev)
 {
-    static uint32_t FrameCount = 0ul;
-
-    if (FrameCount++ == CDC_IN_FRAME_INTERVAL)
-    {
-        /* Reset the frame counter */
-        FrameCount = 0ul;
+    //static uint32_t FrameCount = 0ul;
+    //
+    //if (FrameCount++ == CDC_IN_FRAME_INTERVAL)
+    //{
+    //    /* Reset the frame counter */
+    //    FrameCount = 0ul;
 
         /* Check the data to be sent through IN pipe */
         Handle_USBAsynchXfer(pdev);
-    }
+    //}
 
     return USBD_OK;
 }

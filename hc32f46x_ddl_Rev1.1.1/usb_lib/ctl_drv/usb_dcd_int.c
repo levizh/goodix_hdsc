@@ -437,14 +437,15 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
        (pdev->dev.connection_status == 1u))
     {
         USBD_DCD_INT_fops->Suspend (pdev);
+        USB_OTG_WRITE_REG32(&pdev->regs.DREGS->DIEPEMPMSK, 0ul);
 
         /*  switch-off the clocks */
         power.d32 = 0ul;
         power.b.stoppclk = 1u;
         USB_OTG_MODIFY_REG32(pdev->regs.PCGCCTL, 0ul, power.d32);
 
-        power.b.gatehclk = 1u;
-        USB_OTG_MODIFY_REG32(pdev->regs.PCGCCTL, 0ul, power.d32);
+        //power.b.gatehclk = 1u;
+        //USB_OTG_MODIFY_REG32(pdev->regs.PCGCCTL, 0ul, power.d32);
 
         /* Request to enter Sleep mode after exit from current ISR */
         // SCB->SCR |= (SCB_SCR_SLEEPDEEP_Msk | SCB_SCR_SLEEPONEXIT_Msk);
@@ -521,6 +522,8 @@ static uint32_t DCD_HandleInEP_ISR(USB_OTG_CORE_HANDLE *pdev)
                 DCD_WriteEmptyTxFifo(pdev , epnum);
                 CLEAR_IN_EP_INTR(epnum, in_emptyintr);
             }
+
+            CLEAR_IN_EP_INTR(epnum, in_nak);
         }
         epnum++;
         ep_intr >>= 1u;

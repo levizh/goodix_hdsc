@@ -231,17 +231,17 @@ uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev)
             retval = 0ul;
         }
         /* Out endpoint interrupt */
-        else if (gintr_status.b.outepintr)
+        if (gintr_status.b.outepintr)
         {
             retval |= DCD_HandleOutEP_ISR(pdev);
         }
         /* In endpoint interrupt */
-        else if (gintr_status.b.inepint)
+        if (gintr_status.b.inepint)
         {
             retval |= DCD_HandleInEP_ISR(pdev);
         }
         /* Mode mismatch interrupt */
-        else if (gintr_status.b.modemismatch)
+        if (gintr_status.b.modemismatch)
         {
             USB_OTG_GINTSTS_TypeDef  gintsts;
 
@@ -251,49 +251,49 @@ uint32_t USBD_OTG_ISR_Handler (USB_OTG_CORE_HANDLE *pdev)
             USB_OTG_WRITE_REG32(&pdev->regs.GREGS->GINTSTS, gintsts.d32);
         }
         /* Resume/remote wakeup detected interrupt */
-        else if (gintr_status.b.wkupintr)
+        if (gintr_status.b.wkupintr)
         {
             retval |= DCD_HandleResume_ISR(pdev);
         }
         /* USB suspend interrupt */
-        else if (gintr_status.b.usbsuspend)
+        if (gintr_status.b.usbsuspend)
         {
             retval |= DCD_HandleUSBSuspend_ISR(pdev);
         }
         /* Start of frame interrupt */
-        else if (gintr_status.b.sofintr)
+        if (gintr_status.b.sofintr)
         {
             retval |= DCD_HandleSof_ISR(pdev);
         }
         /* RxFIFO non-empty interrupt */
-        else if (gintr_status.b.rxstsqlvl)
+        if (gintr_status.b.rxstsqlvl)
         {
             retval |= DCD_HandleRxStatusQueueLevel_ISR(pdev);
         }
         /* USB reset interrupt */
-        else if (gintr_status.b.usbreset)
+        if (gintr_status.b.usbreset)
         {
             retval |= DCD_HandleUsbReset_ISR(pdev);
         }
         /* Enumeration done interrupt */
-        else if (gintr_status.b.enumdone)
+        if (gintr_status.b.enumdone)
         {
             retval |= DCD_HandleEnumDone_ISR(pdev);
         }
         /* Incomplete periodic transfer */
-        else if (gintr_status.b.incomplisoin)
+        if (gintr_status.b.incomplisoin)
         {
             retval |= DCD_IsoINIncomplete_ISR(pdev);
         }
         /* Incomplete isochronous IN transfer */
-        else if (gintr_status.b.incomplisoout)
+        if (gintr_status.b.incomplisoout)
         {
             retval |= DCD_IsoOUTIncomplete_ISR(pdev);
         }
 
 #ifdef VBUS_SENSING_ENABLED
         /* VBUS valid interrupt */
-        else if (gintr_status.b.vbusvint)
+        if (gintr_status.b.vbusvint)
         {
             hd_printf("vbus\n");
             retval |= DCD_SessionRequest_ISR(pdev);

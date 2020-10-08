@@ -130,7 +130,7 @@ static void SysClkIni(void)
     CLK_XtalCmd(Enable);
 
     /* MPLL config. */
-    stcMpllCfg.pllmDiv = 1u;
+    stcMpllCfg.pllmDiv = 2u;
     stcMpllCfg.plln = 48u;
     stcMpllCfg.PllpDiv = 4u;    //MPLLP = 96
     stcMpllCfg.PllqDiv = 8u;

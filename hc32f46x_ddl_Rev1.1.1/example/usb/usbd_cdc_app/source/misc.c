@@ -636,6 +636,25 @@ void FPIntConfig(void)
     enIntWakeupEnable(Extint0WU);
 }
 
+/**
+ *******************************************************************************
+ ** \brief  Stop mode config for power consumption
+ ** \param  None
+ ** \retval None
+ ******************************************************************************/
+void StopModeConfig(void)
+{
+    stc_pwc_stop_mode_cfg_t stcPwcStopCfg;
+    MEM_ZERO_STRUCT(stcPwcStopCfg);
+    stcPwcStopCfg.enStpDrvAbi = StopUlowspeed;
+    stcPwcStopCfg.enStopClk = ClkFix;
+    stcPwcStopCfg.enStopFlash = Wait;
+    stcPwcStopCfg.enPll = Enable;
+
+    PWC_StopModeCfg(&stcPwcStopCfg);
+}
+
+
 /*******************************************************************************
  * EOF (not truncated)
  ******************************************************************************/

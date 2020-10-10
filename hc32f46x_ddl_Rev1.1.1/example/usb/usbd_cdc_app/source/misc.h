@@ -83,6 +83,7 @@ void USB_DPDM_PortInit(void);
 void EcIntConfig(void);
 void FPIntConfig(void);
 uint32_t GetECStatus(void);
+void StopModeConfig(void);
 
 #endif /*__MISC_H__*/
 

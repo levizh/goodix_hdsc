@@ -86,6 +86,7 @@ extern uint32_t APP_Rx_ptr_in;    /* Increment this pointer or roll it back to
                                      in the buffer APP_Rx_Buffer. */
 extern uint32_t APP_Rx_length;
 #endif
+extern  USB_OTG_CORE_HANDLE      USB_OTG_dev;
 /*******************************************************************************
  * Local function prototypes ('static')
  ******************************************************************************/
@@ -226,14 +227,17 @@ uint16_t CDC_Transmit_FS (uint8_t* pBuf, uint32_t Len)
 #else
     if(CDC_TX_Handle.TxState == CDC_TX_STAT_IDLE)
     {
-        CDC_TX_Handle.pTxBuf = pBuf;
-        CDC_TX_Handle.u32TxLen = Len;
-        CDC_TX_Handle.TxState = CDC_TX_STAT_PRE;
-    }
-    else if(CDC_TX_Handle.TxState == CDC_TX_STAT_END)
-    {
-        CDC_TX_Handle.TxState = CDC_TX_STAT_IDLE;
+        CDC_TX_Handle.TxState = CDC_TX_STAT_ING;
+        DCD_EP_Tx (&USB_OTG_dev,
+                  CDC_IN_EP,
+                  pBuf,
+                  Len);
         u32Ret = USBD_OK;
+    }
+    else
+    {
+        /* USB bus is not idle */
+
     }
 #endif
     return u32Ret;

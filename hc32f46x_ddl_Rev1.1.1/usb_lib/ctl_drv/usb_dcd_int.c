@@ -421,6 +421,8 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
     USB_OTG_PCGCCTL_TypeDef  power;
     USB_OTG_DSTS_TypeDef     dsts;
     __IO uint8_t prev_status = 0u;
+    USB_OTG_DEPCTL_TypeDef  depctl;
+    __IO uint32_t *depctl_addr;
 
     hd_printf("suspend !!\n");
     prev_status = pdev->dev.device_status;
@@ -437,7 +439,22 @@ static uint32_t DCD_HandleUSBSuspend_ISR(USB_OTG_CORE_HANDLE *pdev)
        (pdev->dev.connection_status == 1u))
     {
         USBD_DCD_INT_fops->Suspend (pdev);
+
+        /* Mask all IN EP irq, especially for transfer fifo empty irq */
         USB_OTG_WRITE_REG32(&pdev->regs.DREGS->DIEPEMPMSK, 0ul);
+
+        /* Cancel tranfer for IN EP */
+        depctl_addr = &(pdev->regs.INEP_REGS[CDC_IN_EP&0x7F]->DIEPCTL);
+        depctl.b = *(__IO stc_bUSB_OTG_DEPCTL_t*)&USB_OTG_READ_REG32(depctl_addr);  /* C-STAT */
+        /* set the disable bits */
+        if (depctl.b.epena)
+        {
+            depctl.b.epdis = 1u;
+            depctl.b.epena = 0u;
+            USB_OTG_WRITE_REG32(depctl_addr, *(uint32_t*)&depctl.b);
+        }
+        /* Flush tx fifo for CDC_IN_EP */
+        USB_OTG_FlushTxFifo(pdev, CDC_IN_EP&0x7F);
 
         /*  switch-off the clocks */
         power.d32 = 0ul;

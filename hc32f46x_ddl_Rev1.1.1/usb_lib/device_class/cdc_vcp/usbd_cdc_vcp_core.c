@@ -133,7 +133,7 @@ uint8_t  usbd_cdc_SOF         (void *pdev);
 /*********************************************
    CDC specific management functions
  *********************************************/
-static void Handle_USBAsynchXfer  (void *pdev);
+//static void Handle_USBAsynchXfer  (void *pdev);
 static uint8_t  *USBD_cdc_GetCfgDesc (uint8_t speed, uint16_t *length);
 #ifdef USE_USB_OTG_HS
 static uint8_t  *USBD_cdc_GetOtherCfgDesc (uint8_t speed, uint16_t *length);
@@ -547,7 +547,7 @@ uint8_t  usbd_cdc_DataIn (void *pdev, uint8_t epnum)
 #else
     if(CDC_TX_Handle.TxState == CDC_TX_STAT_ING)
     {
-        CDC_TX_Handle.TxState = CDC_TX_STAT_END;
+        CDC_TX_Handle.TxState = CDC_TX_STAT_IDLE;
     }
 #endif
     return USBD_OK;
@@ -597,7 +597,7 @@ uint8_t  usbd_cdc_SOF (void *pdev)
     //    FrameCount = 0ul;
 
         /* Check the data to be sent through IN pipe */
-        Handle_USBAsynchXfer(pdev);
+    //    Handle_USBAsynchXfer(pdev);
     //}
 
     return USBD_OK;
@@ -609,74 +609,74 @@ uint8_t  usbd_cdc_SOF (void *pdev)
   * @param  pdev: instance
   * @retval None
   */
-static void Handle_USBAsynchXfer (void *pdev)
-{
-#ifdef RINGBUF_ON
-    uint16_t USB_Tx_length;
-    uint16_t USB_Tx_ptr;
-
-    if(USB_Tx_State != 1u)
-    {
-        if(APP_Rx_ptr_out == APP_Rx_ptr_in)
-        {
-            USB_Tx_State = 0u;
-        }
-        else
-        {
-            if(APP_Rx_ptr_out > APP_Rx_ptr_in)
-            {
-                APP_Rx_length = APP_RX_DATA_SIZE - APP_Rx_ptr_out;
-            }
-            else
-            {
-                APP_Rx_length = APP_Rx_ptr_in - APP_Rx_ptr_out;
-            }
-            #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
-            APP_Rx_length &= ~0x03;
-            #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
-
-
-            if (APP_Rx_length > CDC_DATA_IN_PACKET_SIZE)
-            {
-                USB_Tx_length = CDC_DATA_IN_PACKET_SIZE;
-            }
-            else
-            {
-                USB_Tx_length = (uint16_t)APP_Rx_length;
-            }
-            #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
-            APP_Rx_length &= ~0x03;
-            #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
-
-            USB_Tx_ptr = (uint16_t)APP_Rx_ptr_out;
-            APP_Rx_ptr_out += USB_Tx_length;
-            APP_Rx_length -= USB_Tx_length;
-
-            if(APP_Rx_ptr_out == APP_RX_DATA_SIZE)
-            {
-                APP_Rx_ptr_out = 0ul;
-            }
-
-            /* Start send one packet data */
-            USB_Tx_State = 1u;
-
-            DCD_EP_Tx (pdev,
-                      CDC_IN_EP,
-                      (uint8_t*)&APP_Rx_Buffer[USB_Tx_ptr],
-                      (uint32_t)USB_Tx_length);
-        }
-    }
-#else
-    if(CDC_TX_Handle.TxState == CDC_TX_STAT_PRE)
-    {
-        CDC_TX_Handle.TxState = CDC_TX_STAT_ING;
-        DCD_EP_Tx (pdev,
-                  CDC_IN_EP,
-                  CDC_TX_Handle.pTxBuf,
-                  CDC_TX_Handle.u32TxLen);
-    }
-#endif
-}
+//static void Handle_USBAsynchXfer (void *pdev)
+//{
+//#ifdef RINGBUF_ON
+//    uint16_t USB_Tx_length;
+//    uint16_t USB_Tx_ptr;
+//
+//    if(USB_Tx_State != 1u)
+//    {
+//        if(APP_Rx_ptr_out == APP_Rx_ptr_in)
+//        {
+//            USB_Tx_State = 0u;
+//        }
+//        else
+//        {
+//            if(APP_Rx_ptr_out > APP_Rx_ptr_in)
+//            {
+//                APP_Rx_length = APP_RX_DATA_SIZE - APP_Rx_ptr_out;
+//            }
+//            else
+//            {
+//                APP_Rx_length = APP_Rx_ptr_in - APP_Rx_ptr_out;
+//            }
+//            #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
+//            APP_Rx_length &= ~0x03;
+//            #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
+//
+//
+//            if (APP_Rx_length > CDC_DATA_IN_PACKET_SIZE)
+//            {
+//                USB_Tx_length = CDC_DATA_IN_PACKET_SIZE;
+//            }
+//            else
+//            {
+//                USB_Tx_length = (uint16_t)APP_Rx_length;
+//            }
+//            #ifdef USB_OTG_HS_INTERNAL_DMA_ENABLED
+//            APP_Rx_length &= ~0x03;
+//            #endif /* USB_OTG_HS_INTERNAL_DMA_ENABLED */
+//
+//            USB_Tx_ptr = (uint16_t)APP_Rx_ptr_out;
+//            APP_Rx_ptr_out += USB_Tx_length;
+//            APP_Rx_length -= USB_Tx_length;
+//
+//            if(APP_Rx_ptr_out == APP_RX_DATA_SIZE)
+//            {
+//                APP_Rx_ptr_out = 0ul;
+//            }
+//
+//            /* Start send one packet data */
+//            USB_Tx_State = 1u;
+//
+//            DCD_EP_Tx (pdev,
+//                      CDC_IN_EP,
+//                      (uint8_t*)&APP_Rx_Buffer[USB_Tx_ptr],
+//                      (uint32_t)USB_Tx_length);
+//        }
+//    }
+//#else
+//    if(CDC_TX_Handle.TxState == CDC_TX_STAT_PRE)
+//    {
+//        CDC_TX_Handle.TxState = CDC_TX_STAT_ING;
+//        DCD_EP_Tx (pdev,
+//                  CDC_IN_EP,
+//                  CDC_TX_Handle.pTxBuf,
+//                  CDC_TX_Handle.u32TxLen);
+//    }
+//#endif
+//}
 
 /**
   * @brief  USBD_cdc_GetCfgDesc

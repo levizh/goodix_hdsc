@@ -99,7 +99,7 @@ static void SysClkIni(void)
 //    stc_clk_output_cfg_t    stcOutputClkCfg;
 //    stc_clk_upll_cfg_t      stcUpllCfg;
     uint16_t timeout = 0u;
-    en_flag_status_t status;    
+    en_flag_status_t status;
 
     MEM_ZERO_STRUCT(enSysClkSrc);
     MEM_ZERO_STRUCT(stcSysClkCfg);
@@ -107,7 +107,7 @@ static void SysClkIni(void)
     MEM_ZERO_STRUCT(stcMpllCfg);
     /* Unlock CLK registers */
     M4_SYSREG->PWR_FPRC |= 0xa501u;
-    
+
     /* Set bus clk div. */
 //    stcSysClkCfg.enHclkDiv = ClkSysclkDiv1;
 //    stcSysClkCfg.enExclkDiv = ClkSysclkDiv2;
@@ -132,7 +132,7 @@ static void SysClkIni(void)
     /* MPLL config. */
     stcMpllCfg.pllmDiv = 2u;
     stcMpllCfg.plln = 48u;
-    stcMpllCfg.PllpDiv = 4u;    //MPLLP = 96
+    stcMpllCfg.PllpDiv = 2u;    //MPLLP = 192
     stcMpllCfg.PllqDiv = 8u;
     stcMpllCfg.PllrDiv = 8u;
 //    CLK_SetPllSource(ClkPllSrcXTAL);
@@ -141,8 +141,13 @@ static void SysClkIni(void)
 
     /* flash read wait cycle setting */
     EFM_Unlock();
-    EFM_SetLatency(EFM_LATENCY_2);
+    EFM_SetLatency(EFM_LATENCY_4);
     EFM_Lock();
+
+    /* sram init include read/write wait cycle setting */
+    M4_SRAMC->WTPR = 0x77u;
+    M4_SRAMC->WTCR = 0x11001111ul;
+    M4_SRAMC->WTPR = 0x76u;
 
     /* Enable MPLL. */
 //    CLK_MpllCmd(Enable);
@@ -213,16 +218,16 @@ int32_t main (void)
     {
         //SpiFlash_ReadData(0x00, (uint8_t*)&rxBuffer[0], 4);
         /* read ID cmd */
-        SPI_NSS_LOW();
-        SpiFlash_WriteReadByte(0xF0);
-        SpiFlash_WriteReadByte((uint8_t)((0x00 & 0xFF00u) >> 8u));
-        SpiFlash_WriteReadByte((uint8_t)(0x00 & 0xFFu));
-        SPI_NSS_HIGH();
-        Ddl_Delay1ms(100);
-        SPI_NSS_LOW();
-        SpiFlash_WriteReadByte(0xF1);
-        /* read ID via DMA */
-        HAL_SPI_Receive_DMA(M4_SPI3, (uint8_t*)&rxBuffer, 4);
+        //SPI_NSS_LOW();
+        //SpiFlash_WriteReadByte(0xF0);
+        //SpiFlash_WriteReadByte((uint8_t)((0x00 & 0xFF00u) >> 8u));
+        //SpiFlash_WriteReadByte((uint8_t)(0x00 & 0xFFu));
+        //SPI_NSS_HIGH();
+        //Ddl_Delay1ms(100);
+        //SPI_NSS_LOW();
+        //SpiFlash_WriteReadByte(0xF1);
+        ///* read ID via DMA */
+        //HAL_SPI_Receive_DMA(M4_SPI3, (uint8_t*)&rxBuffer, 4);
         test = GetECStatus();
     }
 }

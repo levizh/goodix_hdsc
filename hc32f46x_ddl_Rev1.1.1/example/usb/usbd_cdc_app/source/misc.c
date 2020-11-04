@@ -488,7 +488,7 @@ void USB_DPDMWakeupConfig(void)
 
     /* Exint config */
     stcExtiConfig.enExitCh = DP_EXINT_CH;
-    stcExtiConfig.enFilterEn = Enable;
+    stcExtiConfig.enFilterEn = Disable;
     stcExtiConfig.enFltClk = Pclk3Div8;
     stcExtiConfig.enExtiLvl = ExIntBothEdge;
     EXINT_Init(&stcExtiConfig);
@@ -563,7 +563,7 @@ void EcIntConfig(void)
 
     /* Exint config */
     stcExtiConfig.enExitCh = EC_EXINT_CH;
-    stcExtiConfig.enFilterEn = Enable;
+    stcExtiConfig.enFilterEn = Disable;
     stcExtiConfig.enFltClk = Pclk3Div8;
     stcExtiConfig.enExtiLvl = ExIntBothEdge;  /* Rising and falling edge */
     EXINT_Init(&stcExtiConfig);
@@ -615,7 +615,7 @@ void FPIntConfig(void)
 
     /* Exint config */
     stcExtiConfig.enExitCh = FP_EXINT_CH;
-    stcExtiConfig.enFilterEn = Enable;
+    stcExtiConfig.enFilterEn = Disable;
     stcExtiConfig.enFltClk = Pclk3Div8;
     stcExtiConfig.enExtiLvl = ExIntRisingEdge;  /* Rising edge */
     EXINT_Init(&stcExtiConfig);

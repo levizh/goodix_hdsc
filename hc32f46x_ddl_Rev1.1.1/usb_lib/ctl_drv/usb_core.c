@@ -594,7 +594,7 @@ USB_OTG_STS USB_OTG_FlushTxFifo (USB_OTG_CORE_HANDLE *pdev , uint32_t num )
         greset.b = *(__IO stc_bUSB_OTG_GRSTCTL_t*)&(USB_OTG_READ_REG32( &pdev->regs.GREGS->GRSTCTL)); /* C-STAT */
         if (++count > 200000ul)
         {
-            ;//break;
+           break;
         }
         USB_OTG_BSP_uDelay(1ul);
     }

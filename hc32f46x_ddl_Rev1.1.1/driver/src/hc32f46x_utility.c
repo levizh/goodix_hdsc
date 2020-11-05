@@ -143,7 +143,7 @@ int32_t fputc(int32_t ch, FILE *f)
 static en_result_t SetUartBaudrate(uint32_t u32Baudrate)
 {
     UART_PRT->CR1_f.FBME = 1ul;
-    UART_PRT->BRR = 0x33FFul;
+    UART_PRT->BRR = 0x68FFul;
     return Ok;
 }
 #else
